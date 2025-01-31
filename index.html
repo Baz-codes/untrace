@@ -1,99 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UntraceAI - AI Detection Bypass</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic page styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 150px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #promptLimit {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .premium {
+            margin-top: 20px;
+        }
+
+        .premium a {
+            color: #1e90ff;
+            text-decoration: none;
+        }
+
+        .premium a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="main-title">UntraceAI</h1>
-    <p class="subtitle">The ultimate AI detection bypass tool. Our tool bypasses AI detection from platforms such as <strong>undetectable.ai, Turnitin, ContentAtScale.ai, ContentDetector.ai, and Copyleaks.com</strong> without changing wording!</p>
+    <div class="content">
+        <h1>The Ultimate AI Detection Bypass Tool</h1>
+        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
 
-    <div class="counter-container">
-      <p><strong>Free prompts remaining:</strong> <span id="remaining-prompts">7</span> / 7</p>
-      <p><strong>Resets in:</strong> <span id="countdown">24:00:00</span></p>
+        <!-- Textarea for input -->
+        <textarea id="inputText" placeholder="Enter text to bypass AI detection..."></textarea>
+        <br>
+        <button onclick="convertText()">Bypass AI Detection</button>
+
+        <!-- Result section -->
+        <p>Converted text:</p>
+        <textarea id="outputText" readonly></textarea>
+
+        <!-- Prompt limit & reset info -->
+        <p id="promptLimit">Prompts used: 0/7</p>
+
+        <!-- Premium link -->
+        <div class="premium">
+            <p>Want unlimited prompts? <a href="https://your-payment-link.com" target="_blank">Get Premium for $30 AUD/month</a></p>
+        </div>
     </div>
 
-    <textarea id="input-text" placeholder="Enter your text here..." rows="6"></textarea>
-    
-    <button onclick="convertText()">Convert Text</button>
-    
-    <h2>Converted Text:</h2>
-    <div id="output"></div>
+    <script>
+        // Function to get stored prompt data or set defaults
+        function getPromptData() {
+            const data = localStorage.getItem("promptTracker");
+            return data ? JSON.parse(data) : { count: 0, resetTime: null };
+        }
 
-    <div class="footer">
-      <p>Need unlimited conversions?</p>
-      <a href="https://your-payment-link.com" target="_blank" class="premium-btn">Upgrade to Premium - $30 AUD/month</a>
-    </div>
-  </div>
+        // Function to save prompt data
+        function savePromptData(data) {
+            localStorage.setItem("promptTracker", JSON.stringify(data));
+        }
 
-  <script>
-    // Track prompt usage
-    let remainingPrompts = parseInt(localStorage.getItem('remainingPrompts')) || 7;
-    let resetTime = localStorage.getItem('resetTime');
-    let countdownElement = document.getElementById('countdown');
+        // Function to check if reset time has passed
+        function checkReset() {
+            let data = getPromptData();
+            if (data.resetTime && new Date().getTime() >= data.resetTime) {
+                data.count = 0; // Reset usage
+                data.resetTime = null; // Remove reset time
+                savePromptData(data);
+            }
+        }
 
-    function updatePromptDisplay() {
-      document.getElementById('remaining-prompts').innerText = remainingPrompts;
-    }
+        // Function to update UI with remaining prompts & timer
+        function updatePromptUI() {
+            let data = getPromptData();
+            let remaining = Math.max(7 - data.count, 0);
+            let promptText = `Prompts used: ${data.count}/7`;
 
-    function convertText() {
-      if (remainingPrompts > 0) {
-        let inputText = document.getElementById('input-text').value;
-        let convertedText = inputText.replace(/[acdp]/g, function(match) {
-          if (match === 'a') return 'а'; // Cyrillic 'а'
-          if (match === 'c') return 'с'; // Cyrillic 'с'
-          if (match === 'd') return 'ԁ'; // Cyrillic 'ԁ'
-          if (match === 'p') return 'р'; // Cyrillic 'р'
+            if (remaining === 0) {
+                let timeLeft = Math.floor((data.resetTime - new Date().getTime()) / 60000); // Minutes left
+                document.getElementById("promptLimit").innerText = `Limit reached! Try again in ${timeLeft} min.`;
+            } else {
+                document.getElementById("promptLimit").innerText = promptText;
+            }
+        }
+
+        // Function to handle prompt submission
+        function handlePrompt() {
+            checkReset(); // Check if reset time has passed
+            let data = getPromptData();
+
+            if (data.count >= 7) {
+                alert("You've reached your limit! Wait for reset.");
+                return;
+            }
+
+            // Increment count and save
+            data.count++;
+            if (data.count === 7) {
+                data.resetTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours from now
+            }
+            savePromptData(data);
+
+            // Update UI
+            updatePromptUI();
+        }
+
+        // Function to start the countdown timer
+        function startTimer() {
+            setInterval(() => {
+                checkReset();
+                updatePromptUI();
+            }, 60000); // Update every minute
+        }
+
+        // Run on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            checkReset();
+            updatePromptUI();
+            startTimer();
         });
-        document.getElementById('output').innerText = convertedText;
 
-        remainingPrompts--;
-        localStorage.setItem('remainingPrompts', remainingPrompts);
-        updatePromptDisplay();
+        // Character conversion function (for AI detection bypass)
+        function convertText() {
+            let inputText = document.getElementById("inputText").value;
 
-        if (remainingPrompts === 0) {
-          startResetTimer();
+            const charMap = {
+                'a': 'а',
+                'd': 'ԁ',
+                'c': 'с',
+                'p': 'р'
+            };
+
+            let convertedText = inputText.replace(/[adcр]/g, match => charMap[match] || match);
+            document.getElementById("outputText").value = convertedText;
+
+            // Update prompt count on each use
+            handlePrompt();
         }
-      } else {
-        alert("You've used all 7 free prompts. Please wait for the reset or upgrade to premium.");
-      }
-    }
-
-    function startResetTimer() {
-      let now = new Date().getTime();
-      let resetTimestamp = now + 24 * 60 * 60 * 1000; // 24 hours from now
-      localStorage.setItem('resetTime', resetTimestamp);
-      updateCountdown();
-    }
-
-    function updateCountdown() {
-      let now = new Date().getTime();
-      let resetTimestamp = localStorage.getItem('resetTime');
-
-      if (resetTimestamp) {
-        let timeLeft = resetTimestamp - now;
-
-        if (timeLeft <= 0) {
-          remainingPrompts = 7;
-          localStorage.setItem('remainingPrompts', 7);
-          localStorage.removeItem('resetTime');
-          updatePromptDisplay();
-          countdownElement.innerText = "24:00:00";
-        } else {
-          let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-          let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-          let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-          countdownElement.innerText = `${hours}:${minutes}:${seconds}`;
-          setTimeout(updateCountdown, 1000);
-        }
-      }
-    }
-
-    updatePromptDisplay();
-    updateCountdown();
-  </script>
+    </script>
 </body>
 </html>
