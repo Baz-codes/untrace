@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UntraceAI - AI Detection Bypass</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="main-title">UntraceAI</h1>
+    <p class="subtitle">The ultimate AI detection bypass tool. Our tool bypasses AI detection from platforms such as <strong>undetectable.ai, Turnitin, ContentAtScale.ai, ContentDetector.ai, and Copyleaks.com</strong> without changing wording!</p>
+
+    <div class="counter-container">
+      <p><strong>Free prompts remaining:</strong> <span id="remaining-prompts">7</span> / 7</p>
+      <p><strong>Resets in:</strong> <span id="countdown">24:00:00</span></p>
+    </div>
+
+    <textarea id="input-text" placeholder="Enter your text here..." rows="6"></textarea>
+    
+    <button onclick="convertText()">Convert Text</button>
+    
+    <h2>Converted Text:</h2>
+    <div id="output"></div>
+
+    <div class="footer">
+      <p>Need unlimited conversions?</p>
+      <a href="https://your-payment-link.com" target="_blank" class="premium-btn">Upgrade to Premium - $30 AUD/month</a>
+    </div>
+  </div>
+
+  <script>
+    // Track prompt usage
+    let remainingPrompts = parseInt(localStorage.getItem('remainingPrompts')) || 7;
+    let resetTime = localStorage.getItem('resetTime');
+    let countdownElement = document.getElementById('countdown');
+
+    function updatePromptDisplay() {
+      document.getElementById('remaining-prompts').innerText = remainingPrompts;
+    }
+
+    function convertText() {
+      if (remainingPrompts > 0) {
+        let inputText = document.getElementById('input-text').value;
+        let convertedText = inputText.replace(/[acdp]/g, function(match) {
+          if (match === 'a') return 'а'; // Cyrillic 'а'
+          if (match === 'c') return 'с'; // Cyrillic 'с'
+          if (match === 'd') return 'ԁ'; // Cyrillic 'ԁ'
+          if (match === 'p') return 'р'; // Cyrillic 'р'
+        });
+        document.getElementById('output').innerText = convertedText;
+
+        remainingPrompts--;
+        localStorage.setItem('remainingPrompts', remainingPrompts);
+        updatePromptDisplay();
+
+        if (remainingPrompts === 0) {
+          startResetTimer();
+        }
+      } else {
+        alert("You've used all 7 free prompts. Please wait for the reset or upgrade to premium.");
+      }
+    }
+
+    function startResetTimer() {
+      let now = new Date().getTime();
+      let resetTimestamp = now + 24 * 60 * 60 * 1000; // 24 hours from now
+      localStorage.setItem('resetTime', resetTimestamp);
+      updateCountdown();
+    }
+
+    function updateCountdown() {
+      let now = new Date().getTime();
+      let resetTimestamp = localStorage.getItem('resetTime');
+
+      if (resetTimestamp) {
+        let timeLeft = resetTimestamp - now;
+
+        if (timeLeft <= 0) {
+          remainingPrompts = 7;
+          localStorage.setItem('remainingPrompts', 7);
+          localStorage.removeItem('resetTime');
+          updatePromptDisplay();
+          countdownElement.innerText = "24:00:00";
+        } else {
+          let hours = Math.floor(timeLeft / (1000 * 60 * 60));
+          let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+          let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+          countdownElement.innerText = `${hours}:${minutes}:${seconds}`;
+          setTimeout(updateCountdown, 1000);
+        }
+      }
+    }
+
+    updatePromptDisplay();
+    updateCountdown();
+  </script>
+</body>
+</html>
