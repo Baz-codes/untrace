@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
+    <title>UntraceAI - Bypass AI Detection</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Basic page styling */
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+            background-color: #f4f4f4;
             text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            margin: auto;
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            color: #333;
         }
 
         p {
             font-size: 1.2rem;
-            margin-bottom: 20px;
+            color: #666;
         }
 
         textarea {
-            width: 80%;
+            width: 90%;
             height: 150px;
             padding: 10px;
-            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1rem;
@@ -44,101 +44,105 @@
 
         button {
             font-size: 16px;
-            padding: 10px 20px;
+            padding: 12px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        #promptLimit {
-            font-size: 18px;
+        .info {
             margin-top: 20px;
-            color: #333;
+            font-size: 18px;
+            color: #444;
         }
 
         .premium {
             margin-top: 20px;
+            font-size: 1rem;
         }
 
         .premium a {
-            color: #1e90ff;
+            color: #007bff;
             text-decoration: none;
+            font-weight: bold;
         }
 
         .premium a:hover {
             text-decoration: underline;
         }
+
     </style>
 </head>
 <body>
-    <div class="content">
+    <div class="container">
         <h1>The Ultimate AI Detection Bypass Tool</h1>
-        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
+        <p>Bypass AI detection from Turnitin, Undetectable.ai, Copyleaks, and more without changing wording!</p>
 
-        <!-- Textarea for input -->
+        <!-- Text input area -->
         <textarea id="inputText" placeholder="Enter text to bypass AI detection..."></textarea>
         <br>
         <button onclick="convertText()">Bypass AI Detection</button>
 
-        <!-- Result section -->
+        <!-- Output area -->
         <p>Converted text:</p>
         <textarea id="outputText" readonly></textarea>
 
-        <!-- Prompt limit & reset info -->
-        <p id="promptLimit">Prompts used: 0/7</p>
+        <!-- Prompt limit information -->
+        <p class="info" id="promptLimit">Prompts used: 0/7</p>
+        <p class="info" id="resetTimer"></p>
 
-        <!-- Premium link -->
+        <!-- Premium Subscription -->
         <div class="premium">
-            <p>Want unlimited prompts? <a href="https://your-payment-link.com" target="_blank">Get Premium for $30 AUD/month</a></p>
+            <p>Need unlimited access? <a href="https://your-payment-link.com" target="_blank">Upgrade to Premium for $30 AUD/month</a></p>
         </div>
     </div>
 
     <script>
-        // Function to get stored prompt data or set defaults
         function getPromptData() {
             const data = localStorage.getItem("promptTracker");
             return data ? JSON.parse(data) : { count: 0, resetTime: null };
         }
 
-        // Function to save prompt data
         function savePromptData(data) {
             localStorage.setItem("promptTracker", JSON.stringify(data));
         }
 
-        // Function to check if reset time has passed
         function checkReset() {
             let data = getPromptData();
             if (data.resetTime && new Date().getTime() >= data.resetTime) {
                 data.count = 0; // Reset usage
-                data.resetTime = null; // Remove reset time
+                data.resetTime = null;
                 savePromptData(data);
             }
         }
 
-        // Function to update UI with remaining prompts & timer
         function updatePromptUI() {
             let data = getPromptData();
             let remaining = Math.max(7 - data.count, 0);
             let promptText = `Prompts used: ${data.count}/7`;
 
             if (remaining === 0) {
-                let timeLeft = Math.floor((data.resetTime - new Date().getTime()) / 60000); // Minutes left
-                document.getElementById("promptLimit").innerText = `Limit reached! Try again in ${timeLeft} min.`;
+                let timeLeftMs = data.resetTime - new Date().getTime();
+                let hours = Math.floor(timeLeftMs / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                document.getElementById("resetTimer").innerText = `Limit reached! Reset in ${hours}h ${minutes}m.`;
             } else {
-                document.getElementById("promptLimit").innerText = promptText;
+                document.getElementById("resetTimer").innerText = "";
             }
+
+            document.getElementById("promptLimit").innerText = promptText;
         }
 
-        // Function to handle prompt submission
         function handlePrompt() {
-            checkReset(); // Check if reset time has passed
+            checkReset();
             let data = getPromptData();
 
             if (data.count >= 7) {
@@ -146,18 +150,15 @@
                 return;
             }
 
-            // Increment count and save
             data.count++;
             if (data.count === 7) {
-                data.resetTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours from now
+                data.resetTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 24-hour reset
             }
-            savePromptData(data);
 
-            // Update UI
+            savePromptData(data);
             updatePromptUI();
         }
 
-        // Function to start the countdown timer
         function startTimer() {
             setInterval(() => {
                 checkReset();
@@ -165,28 +166,25 @@
             }, 60000); // Update every minute
         }
 
-        // Run on page load
         document.addEventListener("DOMContentLoaded", () => {
             checkReset();
             updatePromptUI();
             startTimer();
         });
 
-        // Character conversion function (for AI detection bypass)
         function convertText() {
             let inputText = document.getElementById("inputText").value;
 
             const charMap = {
-                'a': 'а',
-                'd': 'ԁ',
-                'c': 'с',
-                'p': 'р'
+                'a': 'а', // Cyrillic "a"
+                'd': 'ԁ', // Cyrillic "d"
+                'c': 'с', // Cyrillic "c"
+                'p': 'р'  // Cyrillic "p"
             };
 
-            let convertedText = inputText.replace(/[adcр]/g, match => charMap[match] || match);
+            let convertedText = inputText.replace(/[adcp]/g, match => charMap[match] || match);
             document.getElementById("outputText").value = convertedText;
 
-            // Update prompt count on each use
             handlePrompt();
         }
     </script>
