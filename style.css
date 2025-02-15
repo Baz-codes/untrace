@@ -7,8 +7,8 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f7fc;
-    color: #333;
+    background-color: #111; /* Black background */
+    color: #fff; /* White text */
     line-height: 1.6;
     display: flex;
     justify-content: center;
@@ -21,7 +21,7 @@ header {
     text-align: center;
     margin-bottom: 30px;
     padding: 20px;
-    background-color: #2c3e50;
+    background-color: #ff5733; /* Orange background */
     color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -29,7 +29,7 @@ header {
 }
 
 h1 {
-    font-size: 48px;
+    font-size: 50px;
     font-weight: bold;
     letter-spacing: -0.5px;
     margin-bottom: 10px;
@@ -37,7 +37,7 @@ h1 {
 
 p {
     font-size: 18px;
-    color: #dfe6e9;
+    color: #fff;
     line-height: 1.5;
 }
 
@@ -45,7 +45,7 @@ p {
 .container {
     width: 90%;
     max-width: 900px;
-    background-color: #fff;
+    background-color: #1e1e1e; /* Dark grey background for container */
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     padding: 40px;
@@ -61,9 +61,11 @@ textarea {
     height: 180px;
     padding: 15px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #333; /* Dark border for textarea */
     border-radius: 8px;
     margin-bottom: 20px;
+    background-color: #2c2c2c; /* Slightly lighter background */
+    color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     resize: none;
     font-family: 'Arial', sans-serif;
@@ -71,17 +73,18 @@ textarea {
 
 button {
     padding: 12px 24px;
-    background-color: #3498db;
+    background-color: #ff5733; /* Orange background for buttons */
     color: #fff;
     font-size: 18px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
+    width: 100%;
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #c13b1e; /* Darker orange on hover */
 }
 
 /* Text Output Styling */
@@ -89,7 +92,7 @@ button:hover {
     margin-top: 20px;
     font-size: 16px;
     padding: 15px;
-    background-color: #f1f2f6;
+    background-color: #333;
     border-radius: 10px;
     width: 100%;
     word-wrap: break-word;
@@ -101,7 +104,7 @@ button:hover {
 .prompts-info {
     margin-top: 30px;
     font-size: 16px;
-    color: #2c3e50;
+    color: #ff5733; /* Orange text */
     font-weight: bold;
 }
 
@@ -114,18 +117,18 @@ button:hover {
     margin-top: 40px;
     font-size: 18px;
     text-align: center;
-    color: #2c3e50;
+    color: #fff;
 }
 
 .subscription-info a {
-    color: #3498db;
+    color: #ff5733; /* Orange link */
     font-weight: bold;
     text-decoration: none;
     transition: color 0.3s ease-in-out;
 }
 
 .subscription-info a:hover {
-    color: #2980b9;
+    color: #c13b1e; /* Darker orange on hover */
 }
 
 /* Responsive Design for Mobile */
