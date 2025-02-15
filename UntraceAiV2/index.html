@@ -3,24 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI - Bypass AI Detection</title>
+    <title>UntraceAI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <header>
+        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+        <p>The tool that bypasses AI detection without changing wording! Our tool bypasses platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com.</p>
+    </header>
+
     <div class="container">
-        <h1>UntraceAI</h1>
-        <p class="subtitle">The ultimate AI detection bypass tool. Our tool bypasses AI detection from platforms such as undetectable.ai, Turnitin, Content at Scale, Content Detector, and CopyLeaks without changing wording!</p>
+        <!-- Main converter box -->
+        <h2>Enter your text to bypass AI detection</h2>
+        <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+        <button id="convertBtn">Convert</button>
 
-        <div id="premium-status">Checking subscription...</div>
-        <div id="prompt-counter">Prompts Used: <span id="used-prompts">0</span>/7</div>
-        <div id="reset-timer">Next Reset: <span id="countdown">24:00</span></div>
+        <div id="outputText">
+            <p>Converted text will appear here...</p>
+        </div>
 
-        <textarea id="input-text" placeholder="Enter your text here..."></textarea>
-        <button id="convert-btn">Convert Text</button>
-        <textarea id="output-text" readonly></textarea>
+        <div class="prompts-info">
+            <p id="remainingPrompts">You have 7 free prompts remaining today.</p>
+            <p id="resetTimer">Reset in: 24 hours</p>
+        </div>
 
-        <p>Need unlimited prompts? <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" target="_blank">Subscribe for $30 AUD/month</a></p>
-        <p>Manage your subscription: <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" target="_blank">Click here</a></p>
+        <div class="subscription-info">
+            <p>If you want unlimited prompts, <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" target="_blank">click here</a> to subscribe for $30 AUD per month.</p>
+            <p>Manage your subscription: <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" target="_blank">Click here</a></p>
+        </div>
+
     </div>
 
     <script src="script.js"></script>
