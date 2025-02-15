@@ -1,99 +1,70 @@
-/* Modern Full-Screen Design */
+/* Basic styling for your website */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #121212;
-  color: #fff;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    text-align: center;
+    margin: 20px;
+}
+
+h1 {
+    font-size: 36px;
+    color: #333;
 }
 
 .container {
-  width: 90%;
-  max-width: 800px;
-  background-color: #1e1e1e;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.main-title {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #aaa;
-  margin-bottom: 20px;
-}
-
-.counter-container {
-  background-color: #252525;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 15px;
+    width: 80%;
+    max-width: 800px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
 textarea {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background-color: #2a2a2a;
-  color: #fff;
-  margin-bottom: 15px;
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
 }
 
 button {
-  width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  background: linear-gradient(90deg, #ff9800, #ff5722);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 button:hover {
-  background: linear-gradient(90deg, #ff5722, #ff9800);
+    background-color: #0056b3;
 }
 
-#output {
-  background-color: #252525;
-  padding: 12px;
-  border-radius: 8px;
-  min-height: 50px;
-  color: #ddd;
-  margin-top: 10px;
-  word-break: break-word;
+.prompts-info {
+    margin-top: 20px;
+    font-size: 16px;
 }
 
-.footer {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #bbb;
+.subscription-info {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333;
 }
 
-.premium-btn {
-  display: inline-block;
-  padding: 12px 20px;
-  background: #ff5722;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: 0.3s;
+a {
+    color: #007bff;
 }
 
-.premium-btn:hover {
-  background: #ff9800;
+a:hover {
+    text-decoration: underline;
 }

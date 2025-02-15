@@ -3,190 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI - Bypass AI Detection</title>
+    <title>UntraceAI</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* General Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 700px;
-            margin: auto;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            color: #333;
-        }
-
-        p {
-            font-size: 1.2rem;
-            color: #666;
-        }
-
-        textarea {
-            width: 90%;
-            height: 150px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        button {
-            font-size: 16px;
-            padding: 12px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .info {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #444;
-        }
-
-        .premium {
-            margin-top: 20px;
-            font-size: 1rem;
-        }
-
-        .premium a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .premium a:hover {
-            text-decoration: underline;
-        }
-
-    </style>
 </head>
 <body>
+
+    <header>
+        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+        <p>The tool that bypasses AI detection without changing wording! Our tool bypasses platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com.</p>
+    </header>
+
     <div class="container">
-        <h1>The Ultimate AI Detection Bypass Tool</h1>
-        <p>Bypass AI detection from Turnitin, Undetectable.ai, Copyleaks, and more without changing wording!</p>
+        <!-- Main converter box -->
+        <h2>Enter your text to bypass AI detection</h2>
+        <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+        <button id="convertBtn">Convert</button>
 
-        <!-- Text input area -->
-        <textarea id="inputText" placeholder="Enter text to bypass AI detection..."></textarea>
-        <br>
-        <button onclick="convertText()">Bypass AI Detection</button>
-
-        <!-- Output area -->
-        <p>Converted text:</p>
-        <textarea id="outputText" readonly></textarea>
-
-        <!-- Prompt limit information -->
-        <p class="info" id="promptLimit">Prompts used: 0/7</p>
-        <p class="info" id="resetTimer"></p>
-
-        <!-- Premium Subscription -->
-        <div class="premium">
-            <p>Need unlimited access? <a href="https://your-payment-link.com" target="_blank">Upgrade to Premium for $30 AUD/month</a></p>
+        <div id="outputText">
+            <p>Converted text will appear here...</p>
         </div>
+
+        <div class="prompts-info">
+            <p id="remainingPrompts">You have 7 free prompts remaining today.</p>
+            <p id="resetTimer">Reset in: 24 hours</p>
+        </div>
+
+        <div class="subscription-info">
+            <p>If you want unlimited prompts, <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" target="_blank">click here</a> to subscribe for $30 AUD per month.</p>
+            <p>Manage your subscription: <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" target="_blank">Click here</a></p>
+        </div>
+
     </div>
 
-    <script>
-        function getPromptData() {
-            const data = localStorage.getItem("promptTracker");
-            return data ? JSON.parse(data) : { count: 0, resetTime: null };
-        }
-
-        function savePromptData(data) {
-            localStorage.setItem("promptTracker", JSON.stringify(data));
-        }
-
-        function checkReset() {
-            let data = getPromptData();
-            if (data.resetTime && new Date().getTime() >= data.resetTime) {
-                data.count = 0; // Reset usage
-                data.resetTime = null;
-                savePromptData(data);
-            }
-        }
-
-        function updatePromptUI() {
-            let data = getPromptData();
-            let remaining = Math.max(7 - data.count, 0);
-            let promptText = `Prompts used: ${data.count}/7`;
-
-            if (remaining === 0) {
-                let timeLeftMs = data.resetTime - new Date().getTime();
-                let hours = Math.floor(timeLeftMs / (1000 * 60 * 60));
-                let minutes = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                document.getElementById("resetTimer").innerText = `Limit reached! Reset in ${hours}h ${minutes}m.`;
-            } else {
-                document.getElementById("resetTimer").innerText = "";
-            }
-
-            document.getElementById("promptLimit").innerText = promptText;
-        }
-
-        function handlePrompt() {
-            checkReset();
-            let data = getPromptData();
-
-            if (data.count >= 7) {
-                alert("You've reached your limit! Wait for reset.");
-                return;
-            }
-
-            data.count++;
-            if (data.count === 7) {
-                data.resetTime = new Date().getTime() + 24 * 60 * 60 * 1000; // 24-hour reset
-            }
-
-            savePromptData(data);
-            updatePromptUI();
-        }
-
-        function startTimer() {
-            setInterval(() => {
-                checkReset();
-                updatePromptUI();
-            }, 60000); // Update every minute
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            checkReset();
-            updatePromptUI();
-            startTimer();
-        });
-
-        function convertText() {
-            let inputText = document.getElementById("inputText").value;
-
-            const charMap = {
-                'a': 'а', // Cyrillic "a"
-                'd': 'ԁ', // Cyrillic "d"
-                'c': 'с', // Cyrillic "c"
-                'p': 'р'  // Cyrillic "p"
-            };
-
-            let convertedText = inputText.replace(/[adcp]/g, match => charMap[match] || match);
-            document.getElementById("outputText").value = convertedText;
-
-            handlePrompt();
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
