@@ -5,21 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UntraceAI - Bypass AI Detection</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script> <!-- FingerprintJS added -->
 </head>
 <body>
+
     <header>
-        <h1>UntraceAI</h1>
-        <p>The ultimate AI detection bypass tool. Our tool bypasses AI detection from platforms such as undetectable.ai, Turnitin, Content at Scale, ContentDetector.ai, and Copyleaks.com without changing wording!</p>
+        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
     </header>
+
     <main>
-        <textarea id="inputText" placeholder="Enter your text here..."></textarea>
-        <button id="convertButton">Convert</button>
-        <div id="outputText"></div>
-        <p id="promptCounter">Prompts remaining: <span id="remainingPrompts">7</span>/7</p>
-        <p id="resetTimer">Next reset in: <span id="timer">24:00</span></p>
-        <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" id="subscribe">Get Unlimited Access - $30 AUD/month</a>
-        <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM">Manage Subscription</a>
+        <div class="converter-box">
+            <textarea id="inputText" placeholder="Enter text here..."></textarea>
+            <button onclick="checkAndUsePrompt()">Convert Text</button>
+            <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
+        </div>
+
+        <p><strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong></p>
+        <p><strong>Time until reset: <span id="timer">24:00</span></strong></p>
+
+        <div class="premium-section">
+            <h2>Upgrade to Unlimited Prompts</h2>
+            <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
+            <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a>
+            <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
+        </div>
     </main>
-    <script src="script.js"></script>
+
+    <footer>
+        <p>&copy; 2025 UntraceAI. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script> <!-- JavaScript file -->
 </body>
 </html>
