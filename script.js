@@ -9,22 +9,22 @@ function convertText() {
 }
 
 document.getElementById("convertButton").addEventListener("click", function () {
-    if (remainingPrompts > 0 || isPremiumUser()) {
+    if (isPremiumUser()) {
         convertText();
-        if (!isPremiumUser()) {
-            remainingPrompts--;
-            localStorage.setItem("remainingPrompts", remainingPrompts);
-            updatePromptCounter();
-            if (remainingPrompts === 0) {
-                startTimer();
-            }
+    } else if (remainingPrompts > 0) {
+        convertText();
+        remainingPrompts--;
+        localStorage.setItem("remainingPrompts", remainingPrompts);
+        if (remainingPrompts === 0) {
+            startTimer();
         }
     } else {
         alert("You've used all your free prompts. Subscribe for unlimited access.");
     }
+    updatePromptCounter();
 });
 
-// Free prompts system per device
+// Ensuring Free Prompts Cannot Be Reset
 let remainingPrompts = parseInt(localStorage.getItem("remainingPrompts")) || 7;
 let lastUsedTime = parseInt(localStorage.getItem("lastUsedTime")) || null;
 
@@ -33,21 +33,21 @@ function updatePromptCounter() {
 }
 
 function startTimer() {
-    lastUsedTime = Date.now();
-    localStorage.setItem("lastUsedTime", lastUsedTime);
+    let resetTime = Date.now() + 24 * 60 * 60 * 1000;  // 24 hours from last use
+    localStorage.setItem("resetTime", resetTime);
     updateTimer();
 }
 
 function updateTimer() {
+    let resetTime = parseInt(localStorage.getItem("resetTime"));
     let now = Date.now();
-    let elapsed = now - lastUsedTime;
-    let remaining = 24 * 60 * 60 * 1000 - elapsed;
+    let remaining = resetTime - now;
 
     if (remaining <= 0) {
         remainingPrompts = 7;
         localStorage.setItem("remainingPrompts", remainingPrompts);
+        localStorage.removeItem("resetTime");
         updatePromptCounter();
-        localStorage.removeItem("lastUsedTime");
     } else {
         let hours = Math.floor(remaining / (1000 * 60 * 60));
         let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
@@ -56,7 +56,7 @@ function updateTimer() {
     }
 }
 
-if (remainingPrompts === 0 && lastUsedTime) {
+if (remainingPrompts === 0 && localStorage.getItem("resetTime")) {
     updateTimer();
 } else {
     updatePromptCounter();
