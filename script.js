@@ -1,104 +1,81 @@
-// Initialize FingerprintJS to track unique devices
-let deviceId;
-const loadFingerprint = async () => {
+document.addEventListener("DOMContentLoaded", async function () {
     const fp = await FingerprintJS.load();
     const result = await fp.get();
-    deviceId = result.visitorId; // Unique identifier for each device
-    initializePromptTracking(); // Call function to check or reset prompts
-};
-loadFingerprint();
+    const deviceId = result.visitorId;
 
-// Function to replace specific letters with their Cyrillic counterparts while maintaining formatting
-function convertText(text) {
-    const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'е' };
-    return text.replace(/[acdep]/g, letter => replacements[letter] || letter);
-}
+    const freePromptsKey = `freePrompts_${deviceId}`;
+    const timerKey = `timer_${deviceId}`;
+    const maxFreePrompts = 7;
 
-// Retrieve stored data or initialize if none exists
-function initializePromptTracking() {
-    let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-    if (!storedData[deviceId]) {
-        storedData[deviceId] = { remaining: 7, resetTime: null };
-    }
-    localStorage.setItem('promptUsage', JSON.stringify(storedData));
-    updatePromptUI();
-}
-
-// Check and use a prompt if available
-function checkAndUsePrompt() {
-    let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-    let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
-
-    const currentTime = new Date().getTime();
-    
-    // If reset time is reached, restore 7 prompts
-    if (userData.resetTime && currentTime >= userData.resetTime) {
-        userData.remaining = 7;
-        userData.resetTime = null;
+    function getTimeRemaining(endtime) {
+        const total = endtime - Date.now();
+        const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((total / (1000 * 60)) % 60);
+        return { total, hours, minutes };
     }
 
-    if (userData.remaining > 0) {
-        let inputText = document.getElementById('inputText').value;
-        let outputText = convertText(inputText);
-        document.getElementById('outputText').value = outputText;
-        
-        userData.remaining -= 1;
-        if (userData.remaining === 0) {
-            userData.resetTime = currentTime + 24 * 60 * 60 * 1000; // Set reset time to 24 hours later
-            startCountdown(24 * 60 * 60); // Start the timer when last free prompt is used
-        }
-    } else {
-        alert("You've used all 7 free prompts. Upgrade to premium or wait until reset.");
+    function startTimer(duration) {
+        const now = Date.now();
+        const endTime = now + duration;
+        localStorage.setItem(timerKey, endTime);
+        updateTimerDisplay();
     }
-
-    storedData[deviceId] = userData;
-    localStorage.setItem('promptUsage', JSON.stringify(storedData));
-    updatePromptUI();
-}
-
-// Update UI with remaining prompts and start timer if necessary
-function updatePromptUI() {
-    let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-    let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
-
-    document.getElementById('remainingPrompts').innerText = userData.remaining;
-
-    if (userData.resetTime) {
-        const remainingTimeInSeconds = Math.floor((userData.resetTime - new Date().getTime()) / 1000);
-        if (remainingTimeInSeconds > 0) {
-            startCountdown(remainingTimeInSeconds);
-        } else {
-            userData.remaining = 7;
-            userData.resetTime = null;
-            storedData[deviceId] = userData;
-            localStorage.setItem('promptUsage', JSON.stringify(storedData));
-            updatePromptUI();
-        }
-    }
-}
-
-// Start countdown timer
-function startCountdown(durationInSeconds) {
-    let timerElement = document.getElementById('timer');
-    let timeLeft = durationInSeconds;
 
     function updateTimerDisplay() {
-        let hours = Math.floor(timeLeft / 3600);
-        let minutes = Math.floor((timeLeft % 3600) / 60);
-        timerElement.innerText = `${hours}:${minutes.toString().padStart(2, '0')}`;
+        const storedEndTime = localStorage.getItem(timerKey);
+        if (!storedEndTime) return;
+
+        function updateCountdown() {
+            const { total, hours, minutes } = getTimeRemaining(storedEndTime);
+            if (total <= 0) {
+                localStorage.removeItem(timerKey);
+                localStorage.setItem(freePromptsKey, maxFreePrompts);
+                document.getElementById("prompt-count").textContent = `${maxFreePrompts} / ${maxFreePrompts}`;
+                document.getElementById("timer").textContent = "Prompts reset!";
+                return;
+            }
+            document.getElementById("timer").textContent = `Next reset in: ${hours}h ${minutes}m`;
+            requestAnimationFrame(updateCountdown);
+        }
+
+        updateCountdown();
     }
 
-    updateTimerDisplay();
-    let countdown = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-            storedData[deviceId] = { remaining: 7, resetTime: null };
-            localStorage.setItem('promptUsage', JSON.stringify(storedData));
-            updatePromptUI();
-        } else {
-            updateTimerDisplay();
+    function getRemainingPrompts() {
+        return parseInt(localStorage.getItem(freePromptsKey)) || maxFreePrompts;
+    }
+
+    function usePrompt() {
+        let remainingPrompts = getRemainingPrompts();
+        if (remainingPrompts > 0) {
+            remainingPrompts--;
+            localStorage.setItem(freePromptsKey, remainingPrompts);
+            document.getElementById("prompt-count").textContent = `${remainingPrompts} / ${maxFreePrompts}`;
+
+            if (remainingPrompts === 0) {
+                startTimer(24 * 60 * 60 * 1000);
+            }
         }
-    }, 1000);
-}
+    }
+
+    document.getElementById("prompt-count").textContent = `${getRemainingPrompts()} / ${maxFreePrompts}`;
+    updateTimerDisplay();
+
+    document.getElementById("convert-btn").addEventListener("click", function () {
+        let inputText = document.getElementById("input-text").value;
+
+        if (getRemainingPrompts() === 0) {
+            alert("You've used all your free prompts. Please wait for the reset or subscribe for unlimited prompts.");
+            return;
+        }
+
+        const replacements = {
+            'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р'
+        };
+
+        let convertedText = inputText.replace(/[acdp]/g, letter => replacements[letter] || letter);
+
+        document.getElementById("output-text").textContent = convertedText;
+        usePrompt();
+    });
+});
