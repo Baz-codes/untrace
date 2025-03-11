@@ -6,6 +6,8 @@
     <title>UntraceAI - Bypass AI Detection</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script> <!-- FingerprintJS added -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 </head>
 <body>
 
@@ -13,6 +15,17 @@
         <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
         <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
     </header>
+
+    <!-- LOGIN / REGISTER FORM -->
+    <div class="auth-container">
+        <h2>Login / Register</h2>
+        <input type="email" id="email" placeholder="Enter your email">
+        <input type="password" id="password" placeholder="Enter your password">
+        <button onclick="registerUser()">Register</button>
+        <button onclick="loginUser()">Login</button>
+        <button onclick="logoutUser()">Logout</button>
+        <p id="userStatus">Not logged in</p>
+    </div>
 
     <main>
         <div class="converter-box">
