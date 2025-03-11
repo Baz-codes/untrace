@@ -6,12 +6,58 @@
     <title>UntraceAI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.min.js"></script>
     <script type="module" src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1, h2 {
+            color: #222;
+        }
+        input, button {
+            display: block;
+            margin: 10px auto;
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-top: 10px;
+        }
+        .auth-container, .prompt-container {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to UntraceAI</h1>
 
-    <!-- Authentication Form -->
-    <div>
+    <!-- Authentication Section -->
+    <div class="auth-container">
         <h2>Login or Register</h2>
         <input type="email" id="email" placeholder="Enter your email">
         <input type="password" id="password" placeholder="Enter your password">
@@ -21,15 +67,17 @@
     </div>
 
     <!-- Prompt Usage Section -->
-    <div>
+    <div class="prompt-container">
         <h2>Free Prompt System</h2>
         <p>Remaining Prompts: <span id="remainingPrompts">7</span></p>
         <p>Next Reset: <span id="timer">24:00</span></p>
         <input type="text" id="inputText" placeholder="Enter text to convert">
-        <button onclick="checkAndUsePrompt()">Convert</button>
+        <button id="convertBtn">Convert</button>
         <p>Converted Text:</p>
         <textarea id="outputText" readonly></textarea>
     </div>
 
+    <!-- Subscription Link -->
+    <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" target="_blank">Upgrade to Premium</a>
 </body>
 </html>

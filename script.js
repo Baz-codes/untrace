@@ -1,4 +1,4 @@
-// Initialize Firebase
+// Firebase Import & Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
@@ -14,7 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Authentication Functions
+// Authentication Handlers
 document.getElementById("registerBtn").addEventListener("click", () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
@@ -36,7 +36,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
         .catch(error => alert(error.message));
 });
 
-// Initialize FingerprintJS to track unique devices
+// FingerprintJS Initialization
 let deviceId;
 const loadFingerprint = async () => {
     const fp = await FingerprintJS.load();
@@ -46,13 +46,13 @@ const loadFingerprint = async () => {
 };
 loadFingerprint();
 
-// Function to replace specific letters while maintaining formatting
+// Convert Text Function
 function convertText(text) {
     const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'е' };
     return text.replace(/[acdep]/g, letter => replacements[letter] || letter);
 }
 
-// Retrieve stored data or initialize if none exists
+// Prompt Usage System
 function initializePromptTracking() {
     let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
     if (!storedData[deviceId]) {
@@ -62,8 +62,7 @@ function initializePromptTracking() {
     updatePromptUI();
 }
 
-// Check and use a prompt if available
-function checkAndUsePrompt() {
+document.getElementById("convertBtn").addEventListener("click", () => {
     let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
     let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
     const currentTime = new Date().getTime();
@@ -90,51 +89,23 @@ function checkAndUsePrompt() {
     storedData[deviceId] = userData;
     localStorage.setItem('promptUsage', JSON.stringify(storedData));
     updatePromptUI();
-}
+});
 
-// Update UI with remaining prompts and start timer if necessary
-function updatePromptUI() {
-    let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-    let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
-
-    document.getElementById('remainingPrompts').innerText = userData.remaining;
-
-    if (userData.resetTime) {
-        const remainingTimeInSeconds = Math.floor((userData.resetTime - new Date().getTime()) / 1000);
-        if (remainingTimeInSeconds > 0) {
-            startCountdown(remainingTimeInSeconds);
-        } else {
-            userData.remaining = 7;
-            userData.resetTime = null;
-            storedData[deviceId] = userData;
-            localStorage.setItem('promptUsage', JSON.stringify(storedData));
-            updatePromptUI();
-        }
-    }
-}
-
-// Start countdown timer
-function startCountdown(durationInSeconds) {
+// Countdown Timer
+function startCountdown(duration) {
     let timerElement = document.getElementById('timer');
-    let timeLeft = durationInSeconds;
-
-    function updateTimerDisplay() {
+    let timeLeft = duration;
+    let countdown = setInterval(() => {
         let hours = Math.floor(timeLeft / 3600);
         let minutes = Math.floor((timeLeft % 3600) / 60);
         timerElement.innerText = `${hours}:${minutes.toString().padStart(2, '0')}`;
-    }
-
-    updateTimerDisplay();
-    let countdown = setInterval(() => {
         timeLeft--;
-        if (timeLeft <= 0) {
+
+        if (timeLeft < 0) {
             clearInterval(countdown);
-            let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-            storedData[deviceId] = { remaining: 7, resetTime: null };
-            localStorage.setItem('promptUsage', JSON.stringify(storedData));
-            updatePromptUI();
-        } else {
-            updateTimerDisplay();
+            initializePromptTracking();
         }
     }, 1000);
 }
+
+updatePromptUI();
