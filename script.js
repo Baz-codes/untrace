@@ -1,6 +1,5 @@
-// Firebase Import & Initialization
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDhAAn061YCAy8B251n_QeUVQwC1j8RFQk",
@@ -12,100 +11,94 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = getAuth();
 
-// Authentication Handlers
-document.getElementById("registerBtn").addEventListener("click", () => {
+// Auth Functions
+function register() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     createUserWithEmailAndPassword(auth, email, password)
-        .then(() => alert("Account created successfully!"))
-        .catch(error => alert(error.message));
-});
+        .then(() => document.getElementById("auth-status").innerText = "Registered successfully")
+        .catch(error => document.getElementById("auth-status").innerText = error.message);
+}
 
-document.getElementById("loginBtn").addEventListener("click", () => {
+function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     signInWithEmailAndPassword(auth, email, password)
-        .then(() => alert("Logged in successfully!"))
-        .catch(error => alert(error.message));
-});
+        .then(() => document.getElementById("auth-status").innerText = "Logged in successfully")
+        .catch(error => document.getElementById("auth-status").innerText = error.message);
+}
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
-    signOut(auth).then(() => alert("Logged out successfully!"))
-        .catch(error => alert(error.message));
-});
+function logout() {
+    signOut(auth)
+        .then(() => document.getElementById("auth-status").innerText = "Logged out successfully")
+        .catch(error => document.getElementById("auth-status").innerText = error.message);
+}
 
-// FingerprintJS Initialization
+window.register = register;
+window.login = login;
+window.logout = logout;
+
+// FingerprintJS
 let deviceId;
 const loadFingerprint = async () => {
     const fp = await FingerprintJS.load();
     const result = await fp.get();
-    deviceId = result.visitorId; 
+    deviceId = result.visitorId;
     initializePromptTracking();
 };
 loadFingerprint();
 
-// Convert Text Function
-function convertText(text) {
-    const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'е' };
-    return text.replace(/[acdep]/g, letter => replacements[letter] || letter);
-}
-
-// Prompt Usage System
+// Prompt Tracking
 function initializePromptTracking() {
     let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-    if (!storedData[deviceId]) {
-        storedData[deviceId] = { remaining: 7, resetTime: null };
-    }
+    if (!storedData[deviceId]) storedData[deviceId] = { remaining: 7, resetTime: null };
     localStorage.setItem('promptUsage', JSON.stringify(storedData));
     updatePromptUI();
 }
 
-document.getElementById("convertBtn").addEventListener("click", () => {
+function checkAndUsePrompt() {
     let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
     let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
-    const currentTime = new Date().getTime();
-    
+    const currentTime = Date.now();
+
     if (userData.resetTime && currentTime >= userData.resetTime) {
         userData.remaining = 7;
         userData.resetTime = null;
     }
 
     if (userData.remaining > 0) {
-        let inputText = document.getElementById('inputText').value;
-        let outputText = convertText(inputText);
-        document.getElementById('outputText').value = outputText;
-        
-        userData.remaining -= 1;
-        if (userData.remaining === 0) {
-            userData.resetTime = currentTime + 24 * 60 * 60 * 1000; 
-            startCountdown(24 * 60 * 60);
-        }
+        userData.remaining--;
+        if (userData.remaining === 0) userData.resetTime = currentTime + 86400000;
     } else {
-        alert("You've used all 7 free prompts. Upgrade to premium or wait until reset.");
+        alert("No free prompts left. Upgrade to premium or wait.");
     }
 
     storedData[deviceId] = userData;
     localStorage.setItem('promptUsage', JSON.stringify(storedData));
     updatePromptUI();
-});
-
-// Countdown Timer
-function startCountdown(duration) {
-    let timerElement = document.getElementById('timer');
-    let timeLeft = duration;
-    let countdown = setInterval(() => {
-        let hours = Math.floor(timeLeft / 3600);
-        let minutes = Math.floor((timeLeft % 3600) / 60);
-        timerElement.innerText = `${hours}:${minutes.toString().padStart(2, '0')}`;
-        timeLeft--;
-
-        if (timeLeft < 0) {
-            clearInterval(countdown);
-            initializePromptTracking();
-        }
-    }, 1000);
 }
 
-updatePromptUI();
+function updatePromptUI() {
+    let storedData = JSON.parse(localStorage.getItem('promptUsage')) || {};
+    let userData = storedData[deviceId] || { remaining: 7, resetTime: null };
+    document.getElementById('remainingPrompts').innerText = userData.remaining;
+}
+
+// Cyrillic Letter Conversion (ONLY 'a', 'c', 'd', 'p')
+const cyrillicMap = {
+    'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р'
+};
+
+function convertToCyrillic(text) {
+    return text.split('').map(char => cyrillicMap[char.toLowerCase()] || char).join('');
+}
+
+function convertText() {
+    checkAndUsePrompt();
+    const inputText = document.getElementById("inputText").value;
+    document.getElementById("outputText").value = convertToCyrillic(inputText);
+}
+
+window.convertText = convertText;

@@ -1,126 +1,88 @@
-/* General Page Styling */
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     background-color: #121212;
     color: #ffffff;
+    text-align: center;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
 }
 
-/* Header */
+header {
+    background-color: #ff6a00;
+    padding: 20px;
+}
+
 h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #ff6a00;
-    text-align: center;
-    margin-top: 20px;
+    margin: 0;
+    font-size: 28px;
 }
 
-/* Main Container */
-.container {
-    background-color: #1e1e1e;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0px 4px 15px rgba(255, 106, 0, 0.3);
+p {
+    font-size: 16px;
+}
+
+.auth-container {
+    background-color: #222;
+    padding: 15px;
+    margin: 20px auto;
+    width: 300px;
+    border-radius: 8px;
+}
+
+input {
     width: 90%;
-    max-width: 600px;
-    text-align: center;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
 }
 
-/* Input and Output Styling */
+button {
+    background-color: #ff6a00;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.converter-box {
+    background-color: #222;
+    padding: 20px;
+    width: 60%;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
 textarea {
     width: 100%;
-    height: 150px;
-    padding: 12px;
+    height: 100px;
     margin: 10px 0;
+    border-radius: 5px;
     border: none;
+    padding: 10px;
+}
+
+.premium-section {
+    background-color: #222;
+    padding: 20px;
+    margin: 20px auto;
+    width: 50%;
     border-radius: 8px;
-    background-color: #252525;
-    color: #ffffff;
-    font-size: 16px;
-    resize: none;
 }
 
-/* Convert Button */
-button {
-    background: linear-gradient(135deg, #ff6a00, #ff4500);
-    color: #ffffff;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 12px 20px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
-}
-
-button:hover {
-    background: linear-gradient(135deg, #ff4500, #ff6a00);
-    transform: scale(1.05);
-}
-
-/* Free Prompts Section */
-.prompt-info {
-    font-size: 16px;
-    color: #dddddd;
-    margin-top: 15px;
-}
-
-#timer {
-    font-size: 18px;
-    font-weight: bold;
-    color: #ff6a00;
-}
-
-/* Subscription Section */
-.subscription {
-    margin-top: 20px;
-    background-color: #252525;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(255, 106, 0, 0.2);
-}
-
-.subscription p {
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-.subscription a {
+.premium-button, .manage-button {
+    background-color: #ff6a00;
+    color: white;
+    padding: 10px 20px;
     display: inline-block;
+    margin: 5px;
     text-decoration: none;
-    font-weight: bold;
-    color: #ffffff;
-    background: linear-gradient(135deg, #ff6a00, #ff4500);
-    padding: 10px 15px;
-    border-radius: 6px;
-    transition: 0.3s ease-in-out;
+    border-radius: 5px;
 }
 
-.subscription a:hover {
-    background: linear-gradient(135deg, #ff4500, #ff6a00);
-    transform: scale(1.05);
-}
-
-/* Footer */
-.footer {
-    margin-top: 20px;
+footer {
+    background-color: #111;
+    padding: 10px;
     font-size: 14px;
-    color: #aaaaaa;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        width: 95%;
-    }
-    h1 {
-        font-size: 2rem;
-    }
 }

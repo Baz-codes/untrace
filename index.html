@@ -3,81 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.min.js"></script>
-    <script type="module" src="script.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        h1, h2 {
-            color: #222;
-        }
-        input, button {
-            display: block;
-            margin: 10px auto;
-            padding: 8px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        textarea {
-            width: 80%;
-            height: 100px;
-            margin-top: 10px;
-        }
-        .auth-container, .prompt-container {
-            background: white;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 400px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        a {
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: blue;
-        }
-    </style>
+    <title>UntraceAI - Bypass AI Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 </head>
 <body>
-    <h1>Welcome to UntraceAI</h1>
 
-    <!-- Authentication Section -->
-    <div class="auth-container">
-        <h2>Login or Register</h2>
-        <input type="email" id="email" placeholder="Enter your email">
-        <input type="password" id="password" placeholder="Enter your password">
-        <button id="registerBtn">Register</button>
-        <button id="loginBtn">Login</button>
-        <button id="logoutBtn">Logout</button>
-    </div>
+    <header>
+        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
+    </header>
 
-    <!-- Prompt Usage Section -->
-    <div class="prompt-container">
-        <h2>Free Prompt System</h2>
-        <p>Remaining Prompts: <span id="remainingPrompts">7</span></p>
-        <p>Next Reset: <span id="timer">24:00</span></p>
-        <input type="text" id="inputText" placeholder="Enter text to convert">
-        <button id="convertBtn">Convert</button>
-        <p>Converted Text:</p>
-        <textarea id="outputText" readonly></textarea>
-    </div>
+    <main>
+        <div class="auth-container">
+            <h2>Login / Register</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="register()">Register</button>
+            <button onclick="login()">Login</button>
+            <button onclick="logout()">Logout</button>
+            <p id="auth-status"></p>
+        </div>
 
-    <!-- Subscription Link -->
-    <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" target="_blank">Upgrade to Premium</a>
+        <div class="converter-box">
+            <textarea id="inputText" placeholder="Enter text here..."></textarea>
+            <button onclick="checkAndUsePrompt()">Convert Text</button>
+            <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
+        </div>
+
+        <p><strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong></p>
+        <p><strong>Time until reset: <span id="timer">24:00</span></strong></p>
+
+        <div class="premium-section">
+            <h2>Upgrade to Unlimited Prompts</h2>
+            <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
+            <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a>
+            <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UntraceAI. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
