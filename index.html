@@ -3,52 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI - Bypass AI Detection</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script> <!-- FingerprintJS added -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <title>UntraceAI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.min.js"></script>
+    <script type="module" src="script.js"></script>
 </head>
 <body>
+    <h1>Welcome to UntraceAI</h1>
 
-    <header>
-        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
-        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
-    </header>
-
-    <!-- LOGIN / REGISTER FORM -->
-    <div class="auth-container">
-        <h2>Login / Register</h2>
+    <!-- Authentication Form -->
+    <div>
+        <h2>Login or Register</h2>
         <input type="email" id="email" placeholder="Enter your email">
         <input type="password" id="password" placeholder="Enter your password">
-        <button onclick="registerUser()">Register</button>
-        <button onclick="loginUser()">Login</button>
-        <button onclick="logoutUser()">Logout</button>
-        <p id="userStatus">Not logged in</p>
+        <button id="registerBtn">Register</button>
+        <button id="loginBtn">Login</button>
+        <button id="logoutBtn">Logout</button>
     </div>
 
-    <main>
-        <div class="converter-box">
-            <textarea id="inputText" placeholder="Enter text here..."></textarea>
-            <button onclick="checkAndUsePrompt()">Convert Text</button>
-            <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
-        </div>
+    <!-- Prompt Usage Section -->
+    <div>
+        <h2>Free Prompt System</h2>
+        <p>Remaining Prompts: <span id="remainingPrompts">7</span></p>
+        <p>Next Reset: <span id="timer">24:00</span></p>
+        <input type="text" id="inputText" placeholder="Enter text to convert">
+        <button onclick="checkAndUsePrompt()">Convert</button>
+        <p>Converted Text:</p>
+        <textarea id="outputText" readonly></textarea>
+    </div>
 
-        <p><strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong></p>
-        <p><strong>Time until reset: <span id="timer">24:00</span></strong></p>
-
-        <div class="premium-section">
-            <h2>Upgrade to Unlimited Prompts</h2>
-            <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
-            <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a>
-            <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 UntraceAI. All rights reserved.</p>
-    </footer>
-
-    <script src="script.js"></script> <!-- JavaScript file -->
 </body>
 </html>
