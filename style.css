@@ -26,53 +26,7 @@ p {
   font-size: 1rem;
 }
 
-/* Login Section */
-#loginSection {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-}
-
-#loginForm input {
-  width: 90%;
-  padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  background-color: #252525;
-  color: #ffffff;
-  font-size: 16px;
-}
-
-#loginForm button {
-  background: linear-gradient(135deg, #ff6a00, #ff4500);
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-}
-
-#loginForm button:hover {
-  background: linear-gradient(135deg, #ff4500, #ff6a00);
-  transform: scale(1.05);
-}
-
-/* User Status */
-#userStatus {
-  margin: 10px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-/* Conversion Tool */
+/* Converter (Main Feature) */
 .converter-box {
   background-color: #1e1e1e;
   border-radius: 12px;
@@ -164,6 +118,58 @@ button:hover {
   transform: scale(1.05);
 }
 
+/* User Status */
+#userStatus {
+  margin: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Login Section (Fixed at bottom right) */
+#loginSection {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#loginSection h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+#loginForm input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #252525;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+#loginForm button {
+  background: linear-gradient(135deg, #ff6a00, #ff4500);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+#loginForm button:hover {
+  background: linear-gradient(135deg, #ff4500, #ff6a00);
+  transform: scale(1.05);
+}
+
 /* Footer */
 footer {
   margin: 20px;
@@ -173,9 +179,15 @@ footer {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .converter-box,
-  #loginSection {
+  .converter-box {
     width: 95%;
+  }
+  #loginSection {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    width: 95%;
+    margin: 10px auto;
   }
   h1 {
     font-size: 2rem;

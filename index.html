@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UntraceAI - Bypass AI Detection</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- FingerprintJS (for unique device tracking) -->
   <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 </head>
 <body>
@@ -16,21 +18,7 @@
     </p>
   </header>
   
-  <!-- Login Section -->
-  <section id="loginSection">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <div id="loginMessage"></div>
-  </section>
-  
-  <!-- Display Login Status -->
-  <div id="userStatus"></div>
-  
-  <!-- Conversion Tool -->
+  <!-- Main Conversion Tool -->
   <main>
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
@@ -53,10 +41,25 @@
     </div>
   </main>
   
+  <!-- Display User Status -->
+  <div id="userStatus"></div>
+  
+  <!-- Login Section (fixed at bottom right) -->
+  <section id="loginSection">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div id="loginMessage"></div>
+  </section>
+  
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
   </footer>
   
-  <script src="script.js"></script>
+  <!-- Load script as a module so we can use Firebase v9 imports -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
