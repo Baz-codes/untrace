@@ -1,41 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UntraceAI - Bypass AI Detection</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script> <!-- FingerprintJS added -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UntraceAI - Bypass AI Detection</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
 </head>
 <body>
-
-    <header>
-        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
-        <p>Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin, contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!</p>
-    </header>
-
-    <main>
-        <div class="converter-box">
-            <textarea id="inputText" placeholder="Enter text here..."></textarea>
-            <button onclick="checkAndUsePrompt()">Convert Text</button>
-            <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
-        </div>
-
-        <p><strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong></p>
-        <p><strong>Time until reset: <span id="timer">24:00</span></strong></p>
-
-        <div class="premium-section">
-            <h2>Upgrade to Unlimited Prompts</h2>
-            <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
-            <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a>
-            <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
-        </div>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 UntraceAI. All rights reserved.</p>
-    </footer>
-
-    <script src="script.js"></script> <!-- JavaScript file -->
+  <header>
+    <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+    <p>
+      Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin,
+      contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!
+    </p>
+  </header>
+  
+  <!-- Login Section -->
+  <section id="loginSection">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div id="loginMessage"></div>
+  </section>
+  
+  <!-- Display Login Status -->
+  <div id="userStatus"></div>
+  
+  <!-- Conversion Tool -->
+  <main>
+    <div class="converter-box">
+      <textarea id="inputText" placeholder="Enter text here..."></textarea>
+      <button onclick="checkAndUsePrompt()">Convert Text</button>
+      <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
+    </div>
+    <p class="prompt-info">
+      <strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong>
+    </p>
+    <p class="prompt-info">
+      <strong>Time until reset: <span id="timer">24:00</span></strong>
+    </p>
+    
+    <!-- Premium Subscription Section -->
+    <div class="premium-section">
+      <h2>Upgrade to Unlimited Prompts</h2>
+      <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
+      <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a>
+      <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 UntraceAI. All rights reserved.</p>
+  </footer>
+  
+  <script src="script.js"></script>
 </body>
 </html>
