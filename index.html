@@ -6,17 +6,15 @@
   <title>UntraceAI - Bypass AI Detection</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase (compat SDK for simplicity) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <header>
     <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
-    <p>
-      Our tool bypasses AI detection from platforms such as undetectable.ai, turnitin,
-      contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!
-    </p>
+    <p>Bypasses AI detection without changing wording!</p>
   </header>
 
   <main>
@@ -28,7 +26,6 @@
       <div id="timerDisplay"></div>
     </div>
 
-    <!-- Premium Subscription Section -->
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
       <p>For only <strong>$30 AUD per month</strong>, enjoy unlimited access to our AI bypass tool.</p>
@@ -37,7 +34,6 @@
     </div>
   </main>
 
-  <!-- Login Section -->
   <section id="loginSection">
     <h2>Login</h2>
     <form id="loginForm">
@@ -56,7 +52,6 @@
     <div id="registerMessage"></div>
   </section>
 
-  <!-- User Status -->
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
 
   <footer>
