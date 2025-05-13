@@ -15,14 +15,12 @@ let isPremium = false;
 let userEmail = null;
 let promptData = null;
 
-// Handle login state
 auth.onAuthStateChanged(function(user) {
   if (user) {
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
     userEmail = user.email;
-
     // Always check Firestore fresh after login
     db.collection('users').where('email', '==', user.email).get()
       .then((querySnapshot) => {
@@ -87,7 +85,6 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
     });
 });
 
-// Convert text
 function convertText() {
   const text = document.getElementById('inputText').value;
   const wordCount = text.trim().split(/\s+/).length;
@@ -119,7 +116,6 @@ function convertText() {
   document.getElementById('outputText').value = output;
 }
 
-// Initialize prompt tracking per user
 function initializePromptTracking() {
   const stored = JSON.parse(localStorage.getItem('promptUsage')) || {};
   if (!stored[userEmail]) {
@@ -129,7 +125,6 @@ function initializePromptTracking() {
   updatePromptUI();
 }
 
-// Update UI for prompts and timer
 function updatePromptUI() {
   if (isPremium) {
     document.getElementById('usageInfo').innerText = "Unlimited prompts.";
@@ -143,7 +138,6 @@ function updatePromptUI() {
   }
 }
 
-// Countdown timer
 function startCountdown(endTime) {
   const timerDisplay = document.getElementById('timerDisplay');
   function updateTimer() {
