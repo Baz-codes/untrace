@@ -30,7 +30,13 @@ auth.onAuthStateChanged(function(user) {
           querySnapshot.forEach((doc) => {
             isPremium = doc.data().premium === true;
             console.log('🔥 Premium status:', isPremium);
-            initializePromptTracking();
+
+            if (isPremium) {
+              document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+              document.getElementById('timerDisplay').innerText = "";
+            } else {
+              initializePromptTracking();
+            }
           });
         } else {
           isPremium = false;
@@ -122,8 +128,13 @@ function initializePromptTracking() {
 
 // Update UI for prompts and timer
 function updatePromptUI() {
+  if (isPremium) {
+    document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+    document.getElementById('timerDisplay').innerText = "";
+    return;
+  }
   const userData = promptData[userEmail];
-  document.getElementById('usageInfo').innerText = isPremium ? "Unlimited prompts." : `Prompts remaining: ${userData.remaining}/5`;
+  document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/5`;
   if (userData.resetTime) {
     startCountdown(userData.resetTime);
   }
