@@ -23,15 +23,18 @@ auth.onAuthStateChanged(function(user) {
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
     userEmail = user.email;
 
-    // Check Firestore for premium status
+    // Always check Firestore fresh after login
     db.collection('users').where('email', '==', user.email).get()
       .then((querySnapshot) => {
         if (!querySnapshot.empty) {
           querySnapshot.forEach((doc) => {
             isPremium = doc.data().premium === true;
-            console.log('🔥 Premium status:', isPremium);
+            console.log('🔥 Premium status from Firestore:', isPremium);
 
             if (isPremium) {
+              // Clear limits and localStorage for premium users
+              promptData = null;
+              localStorage.removeItem('promptUsage');
               document.getElementById('usageInfo').innerText = "Unlimited prompts.";
               document.getElementById('timerDisplay').innerText = "";
             } else {
@@ -39,8 +42,8 @@ auth.onAuthStateChanged(function(user) {
             }
           });
         } else {
-          isPremium = false;
           console.log('❄ No premium record found. User is free.');
+          isPremium = false;
           initializePromptTracking();
         }
       })
