@@ -11,51 +11,46 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let isPremium = false;
-let userEmail = null;
 let promptData = null;
+let userEmail = null;
 
 auth.onAuthStateChanged(function(user) {
   if (user) {
+    userEmail = user.email;
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
-    userEmail = user.email;
-    // Always check Firestore fresh after login
-    db.collection('users').where('email', '==', user.email).get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          querySnapshot.forEach((doc) => {
-            isPremium = doc.data().premium === true;
-            console.log('🔥 Premium status from Firestore:', isPremium);
-
-            if (isPremium) {
-              // Clear limits and localStorage for premium users
-              promptData = null;
-              localStorage.removeItem('promptUsage');
-              document.getElementById('usageInfo').innerText = "Unlimited prompts.";
-              document.getElementById('timerDisplay').innerText = "";
-            } else {
-              initializePromptTracking();
-            }
-          });
-        } else {
-          console.log('❄ No premium record found. User is free.');
-          isPremium = false;
-          initializePromptTracking();
-        }
-      })
-      .catch((error) => {
-        console.error('Error checking premium status:', error);
-        isPremium = false;
-        initializePromptTracking();
-      });
-
+    checkPremiumStatus();
   } else {
     document.getElementById('loginSection').style.display = 'block';
     document.getElementById('userStatus').style.display = 'none';
   }
 });
+
+function checkPremiumStatus() {
+  db.collection('users').where('email', '==', userEmail).get()
+    .then((snapshot) => {
+      if (!snapshot.empty) {
+        snapshot.forEach((doc) => {
+          const premium = doc.data().premium === true;
+          if (premium) {
+            document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+            document.getElementById('timerDisplay').innerText = "";
+            document.getElementById('userStatus').innerText += " ⭐ Premium";
+            localStorage.removeItem('promptUsage');
+          } else {
+            initializePromptTracking();
+          }
+        });
+      } else {
+        initializePromptTracking();
+      }
+    })
+    .catch((error) => {
+      console.error('Error checking premium status:', error);
+      initializePromptTracking();
+    });
+}
 
 // Login form
 document.getElementById('loginForm').addEventListener('submit', function (e) {
@@ -85,35 +80,62 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
     });
 });
 
+// Convert text always checks Firestore first
 function convertText() {
-  const text = document.getElementById('inputText').value;
-  const wordCount = text.trim().split(/\s+/).length;
-  if (!isPremium) {
-    if (wordCount > 100) {
-      alert("Free users can only use up to 100 words per prompt.");
-      return;
-    }
-    let userData = promptData[userEmail];
-    const currentTime = new Date().getTime();
-    if (!userData.resetTime) {
-      userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
-      startCountdown(userData.resetTime);
-    } else if (currentTime >= userData.resetTime) {
-      userData.remaining = 5;
-      userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
-      startCountdown(userData.resetTime);
-    }
-    if (userData.remaining <= 0) {
-      alert("You've used all your 5 free prompts. Please wait for reset or upgrade to premium.");
-      return;
-    }
-    userData.remaining--;
-    localStorage.setItem('promptUsage', JSON.stringify(promptData));
-    updatePromptUI();
+  if (!auth.currentUser) {
+    alert("Please login first.");
+    return;
   }
+
+  db.collection('users').where('email', '==', auth.currentUser.email).get()
+    .then((snapshot) => {
+      let isPremiumNow = false;
+      if (!snapshot.empty) {
+        snapshot.forEach((doc) => {
+          isPremiumNow = doc.data().premium === true;
+        });
+      }
+
+      if (isPremiumNow) {
+        proceedWithConversion();
+      } else {
+        proceedWithFreeUserFlow();
+      }
+    });
+}
+
+function proceedWithConversion() {
+  const text = document.getElementById('inputText').value;
   const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'e' };
   const output = text.replace(/[acdep]/g, (letter) => replacements[letter] || letter);
   document.getElementById('outputText').value = output;
+}
+
+function proceedWithFreeUserFlow() {
+  const text = document.getElementById('inputText').value;
+  const wordCount = text.trim().split(/\s+/).length;
+  if (wordCount > 100) {
+    alert("Free users can only use up to 100 words per prompt.");
+    return;
+  }
+  let userData = promptData[userEmail];
+  const currentTime = new Date().getTime();
+  if (!userData.resetTime) {
+    userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
+    startCountdown(userData.resetTime);
+  } else if (currentTime >= userData.resetTime) {
+    userData.remaining = 5;
+    userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
+    startCountdown(userData.resetTime);
+  }
+  if (userData.remaining <= 0) {
+    alert("You've used all your 5 free prompts. Please wait for reset or upgrade to premium.");
+    return;
+  }
+  userData.remaining--;
+  localStorage.setItem('promptUsage', JSON.stringify(promptData));
+  updatePromptUI();
+  proceedWithConversion();
 }
 
 function initializePromptTracking() {
@@ -126,11 +148,6 @@ function initializePromptTracking() {
 }
 
 function updatePromptUI() {
-  if (isPremium) {
-    document.getElementById('usageInfo').innerText = "Unlimited prompts.";
-    document.getElementById('timerDisplay').innerText = "";
-    return;
-  }
   const userData = promptData[userEmail];
   document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/5`;
   if (userData.resetTime) {
