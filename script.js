@@ -25,10 +25,25 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     });
 });
 
+// Register form submit
+document.getElementById('registerForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      document.getElementById('registerMessage').innerText = "Registration successful! You can now log in.";
+    })
+    .catch((error) => {
+      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
+    });
+});
+
 // Convert text function (Cyrillic replacement)
 function convertText() {
   const text = document.getElementById('inputText').value;
-  const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'e' };
+  const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'е' };
   const output = text.replace(/[acdep]/g, (letter) => replacements[letter] || letter);
   document.getElementById('outputText').value = output;
 }

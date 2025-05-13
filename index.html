@@ -6,7 +6,7 @@
   <title>UntraceAI - Bypass AI Detection</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase App -->
+  <!-- Firebase (compat SDK for simplicity) -->
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
 </head>
@@ -44,13 +44,20 @@
       <button type="submit">Login</button>
     </form>
     <div id="loginMessage"></div>
+
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="email" id="registerEmail" placeholder="Email" required />
+      <input type="password" id="registerPassword" placeholder="Password" required />
+      <button type="submit">Register</button>
+    </form>
+    <div id="registerMessage"></div>
   </section>
 
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
   </footer>
 
-  <!-- Your script -->
   <script src="script.js"></script>
 </body>
 </html>

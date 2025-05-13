@@ -142,7 +142,8 @@ button:hover {
   margin-bottom: 10px;
 }
 
-#loginForm input {
+#loginForm input,
+#registerForm input {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -153,7 +154,8 @@ button:hover {
   font-size: 16px;
 }
 
-#loginForm button {
+#loginForm button,
+#registerForm button {
   background: linear-gradient(135deg, #ff6a00, #ff4500);
   color: #ffffff;
   font-size: 18px;
@@ -165,7 +167,8 @@ button:hover {
   transition: 0.3s ease-in-out;
 }
 
-#loginForm button:hover {
+#loginForm button:hover,
+#registerForm button:hover {
   background: linear-gradient(135deg, #ff4500, #ff6a00);
   transform: scale(1.05);
 }
