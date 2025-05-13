@@ -10,6 +10,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Check if user is logged in and update UI
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('userStatus').style.display = 'block';
+    document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
+  } else {
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('userStatus').style.display = 'none';
+  }
+});
+
 // Login form submit
 document.getElementById('loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
