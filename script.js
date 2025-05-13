@@ -9,27 +9,48 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 let isPremium = false;
 let userEmail = null;
 let promptData = null;
 
-// Check user login state and update UI
+// Handle login state
 auth.onAuthStateChanged(function(user) {
   if (user) {
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
     userEmail = user.email;
-    isPremium = user.email === "premium@example.com"; // <-- You can replace this with your premium emails
-    initializePromptTracking();
+
+    // Check Firestore for premium status
+    db.collection('users').where('email', '==', user.email).get()
+      .then((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach((doc) => {
+            isPremium = doc.data().premium === true;
+            console.log('🔥 Premium status:', isPremium);
+            initializePromptTracking();
+          });
+        } else {
+          isPremium = false;
+          console.log('❄ No premium record found. User is free.');
+          initializePromptTracking();
+        }
+      })
+      .catch((error) => {
+        console.error('Error checking premium status:', error);
+        isPremium = false;
+        initializePromptTracking();
+      });
+
   } else {
     document.getElementById('loginSection').style.display = 'block';
     document.getElementById('userStatus').style.display = 'none';
   }
 });
 
-// Login
+// Login form
 document.getElementById('loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
   const email = document.getElementById('email').value;
@@ -43,7 +64,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     });
 });
 
-// Register
+// Register form
 document.getElementById('registerForm').addEventListener('submit', function (e) {
   e.preventDefault();
   const email = document.getElementById('registerEmail').value;
@@ -56,16 +77,6 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
       document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
     });
 });
-
-// Initialize or load prompt data for the user
-function initializePromptTracking() {
-  const stored = JSON.parse(localStorage.getItem('promptUsage')) || {};
-  if (!stored[userEmail]) {
-    stored[userEmail] = { remaining: 5, resetTime: null };
-  }
-  promptData = stored;
-  updatePromptUI();
-}
 
 // Convert text
 function convertText() {
@@ -99,7 +110,17 @@ function convertText() {
   document.getElementById('outputText').value = output;
 }
 
-// Update prompt UI
+// Initialize prompt tracking per user
+function initializePromptTracking() {
+  const stored = JSON.parse(localStorage.getItem('promptUsage')) || {};
+  if (!stored[userEmail]) {
+    stored[userEmail] = { remaining: 5, resetTime: null };
+  }
+  promptData = stored;
+  updatePromptUI();
+}
+
+// Update UI for prompts and timer
 function updatePromptUI() {
   const userData = promptData[userEmail];
   document.getElementById('usageInfo').innerText = isPremium ? "Unlimited prompts." : `Prompts remaining: ${userData.remaining}/5`;
@@ -108,7 +129,7 @@ function updatePromptUI() {
   }
 }
 
-// Timer countdown
+// Countdown timer
 function startCountdown(endTime) {
   const timerDisplay = document.getElementById('timerDisplay');
   function updateTimer() {
