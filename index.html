@@ -6,8 +6,9 @@
   <title>UntraceAI - Bypass AI Detection</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- FingerprintJS (for unique device tracking) -->
-  <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+  <!-- Firebase App -->
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
 </head>
 <body>
   <header>
@@ -17,21 +18,14 @@
       contentatscale.ai, contentdetector.ai, and copyleaks.com without changing wording!
     </p>
   </header>
-  
-  <!-- Main Conversion Tool -->
+
   <main>
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
-      <button onclick="checkAndUsePrompt()">Convert Text</button>
+      <button onclick="convertText()">Convert Text</button>
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
     </div>
-    <p class="prompt-info">
-      <strong>Free prompts remaining: <span id="remainingPrompts">7</span>/7</strong>
-    </p>
-    <p class="prompt-info">
-      <strong>Time until reset: <span id="timer">24:00</span></strong>
-    </p>
-    
+
     <!-- Premium Subscription Section -->
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
@@ -40,11 +34,8 @@
       <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="manage-button">Manage Subscription</a>
     </div>
   </main>
-  
-  <!-- Display User Status -->
-  <div id="userStatus"></div>
-  
-  <!-- Login Section (fixed at bottom right) -->
+
+  <!-- Login Section -->
   <section id="loginSection">
     <h2>Login</h2>
     <form id="loginForm">
@@ -54,12 +45,12 @@
     </form>
     <div id="loginMessage"></div>
   </section>
-  
+
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
   </footer>
-  
-  <!-- Load script as a module so we can use Firebase v9 imports -->
-  <script type="module" src="script.js"></script>
+
+  <!-- Your script -->
+  <script src="script.js"></script>
 </body>
 </html>
