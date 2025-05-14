@@ -11,6 +11,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+let isPremium = false;
 let promptData = null;
 let userEmail = null;
 
@@ -19,40 +20,52 @@ auth.onAuthStateChanged(function(user) {
     userEmail = user.email;
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
+    document.getElementById('logoutButton').style.display = 'inline-block';
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
-    checkPremiumStatus();
+    checkPremiumOnceAfterLogin();
   } else {
     document.getElementById('loginSection').style.display = 'block';
     document.getElementById('userStatus').style.display = 'none';
+    document.getElementById('logoutButton').style.display = 'none';
   }
 });
 
-function checkPremiumStatus() {
+function checkPremiumOnceAfterLogin() {
   db.collection('users').where('email', '==', userEmail).get()
     .then((snapshot) => {
       if (!snapshot.empty) {
         snapshot.forEach((doc) => {
-          const premium = doc.data().premium === true;
-          if (premium) {
-            document.getElementById('usageInfo').innerText = "Unlimited prompts.";
-            document.getElementById('timerDisplay').innerText = "";
-            document.getElementById('userStatus').innerText += " ⭐ Premium";
-            localStorage.removeItem('promptUsage');
-          } else {
-            initializePromptTracking();
-          }
+          isPremium = doc.data().premium === true;
         });
+      } else {
+        isPremium = false;
+      }
+
+      if (isPremium) {
+        document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+        document.getElementById('timerDisplay').innerText = "";
+        document.getElementById('userStatus').innerText += " ⭐ Premium";
+        localStorage.removeItem('promptUsage');
       } else {
         initializePromptTracking();
       }
     })
     .catch((error) => {
       console.error('Error checking premium status:', error);
+      isPremium = false;
       initializePromptTracking();
     });
 }
 
-// Login form
+document.getElementById('logoutButton').addEventListener('click', function () {
+  auth.signOut().then(() => {
+    alert("You have been logged out.");
+    location.reload();
+  }).catch((error) => {
+    console.error('Logout failed:', error);
+  });
+});
+
 document.getElementById('loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
   const email = document.getElementById('email').value;
@@ -66,7 +79,6 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     });
 });
 
-// Register form
 document.getElementById('registerForm').addEventListener('submit', function (e) {
   e.preventDefault();
   const email = document.getElementById('registerEmail').value;
@@ -80,28 +92,17 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
     });
 });
 
-// Convert text always checks Firestore first
 function convertText() {
   if (!auth.currentUser) {
     alert("Please login first.");
     return;
   }
 
-  db.collection('users').where('email', '==', auth.currentUser.email).get()
-    .then((snapshot) => {
-      let isPremiumNow = false;
-      if (!snapshot.empty) {
-        snapshot.forEach((doc) => {
-          isPremiumNow = doc.data().premium === true;
-        });
-      }
-
-      if (isPremiumNow) {
-        proceedWithConversion();
-      } else {
-        proceedWithFreeUserFlow();
-      }
-    });
+  if (isPremium) {
+    proceedWithConversion();
+  } else {
+    proceedWithFreeUserFlow();
+  }
 }
 
 function proceedWithConversion() {
