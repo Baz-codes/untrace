@@ -92,35 +92,6 @@ main {
   border-radius: 10px;
 }
 
-#loginSection h2 {
-  margin-top: 0;
-}
-
-#loginForm, #registerForm {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#loginForm input, #registerForm input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-#loginForm button, #registerForm button {
-  padding: 10px;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#loginForm button:hover, #registerForm button:hover {
-  background: #0056b3;
-}
-
 #logoutButton {
   margin: 20px auto;
   display: block;
