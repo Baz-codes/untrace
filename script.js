@@ -17,11 +17,11 @@ let userEmail = null;
 
 auth.onAuthStateChanged(function(user) {
   if (user) {
-    userEmail = user.email;
+    userEmail = user.email.toLowerCase();
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('logoutButton').style.display = 'inline-block';
-    document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
+    document.getElementById('userStatus').innerText = `Welcome, ${userEmail}`;
     checkPremiumOnceAfterLogin();
   } else {
     document.getElementById('loginSection').style.display = 'block';
@@ -42,6 +42,7 @@ function checkPremiumOnceAfterLogin() {
       }
 
       if (isPremium) {
+        console.log(`✅ Premium confirmed for ${userEmail}`);
         document.getElementById('usageInfo').innerText = "Unlimited prompts.";
         document.getElementById('timerDisplay').innerText = "";
         document.getElementById('userStatus').innerText += " ⭐ Premium";
@@ -68,7 +69,7 @@ document.getElementById('logoutButton').addEventListener('click', function () {
 
 document.getElementById('loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  const email = document.getElementById('email').value;
+  const email = document.getElementById('email').value.toLowerCase();
   const password = document.getElementById('password').value;
   auth.signInWithEmailAndPassword(email, password)
     .then(() => {
@@ -81,7 +82,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
 
 document.getElementById('registerForm').addEventListener('submit', function (e) {
   e.preventDefault();
-  const email = document.getElementById('registerEmail').value;
+  const email = document.getElementById('registerEmail').value.toLowerCase();
   const password = document.getElementById('registerPassword').value;
   auth.createUserWithEmailAndPassword(email, password)
     .then(() => {
@@ -149,6 +150,11 @@ function initializePromptTracking() {
 }
 
 function updatePromptUI() {
+  if (isPremium) {
+    document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+    document.getElementById('timerDisplay').innerText = "";
+    return;
+  }
   const userData = promptData[userEmail];
   document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/5`;
   if (userData.resetTime) {
