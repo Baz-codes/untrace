@@ -1,198 +1,145 @@
-/* General Page Styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #121212;
-  color: #ffffff;
   margin: 0;
   padding: 0;
+  background: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 20px 10px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+header p {
+  margin: 5px 0 0;
+}
+
+main {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.converter-box {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 10px;
 }
 
-/* Header */
-header {
-  text-align: center;
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #ff6a00;
-}
-
-p {
-  font-size: 1rem;
-}
-
-/* Converter (Main Feature) */
-.converter-box {
-  background-color: #1e1e1e;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0px 4px 15px rgba(255, 106, 0, 0.3);
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-  margin: 20px;
-}
-
-textarea {
+.converter-box textarea {
   width: 100%;
-  height: 150px;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  background-color: #252525;
-  color: #ffffff;
-  font-size: 16px;
-  resize: none;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
 }
 
-button {
-  background: linear-gradient(135deg, #ff6a00, #ff4500);
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 12px 20px;
-  margin-top: 15px;
+.converter-box button {
+  padding: 10px;
   border: none;
-  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
 }
 
-button:hover {
-  background: linear-gradient(135deg, #ff4500, #ff6a00);
-  transform: scale(1.05);
+.converter-box button:hover {
+  background: #0056b3;
 }
 
-/* Prompt Info */
-.prompt-info {
-  font-size: 16px;
-  color: #dddddd;
-  margin-top: 15px;
-}
-
-#timer {
-  font-size: 18px;
+#usageInfo, #timerDisplay {
+  margin-top: 10px;
   font-weight: bold;
-  color: #ff6a00;
 }
 
-/* Premium Subscription Section */
 .premium-section {
-  background-color: #252525;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 20px;
+  margin-top: 30px;
   text-align: center;
 }
 
-.premium-section h2 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-}
-
-.premium-section p {
-  font-size: 1rem;
-  margin-bottom: 15px;
-}
-
-.premium-section a {
-  text-decoration: none;
-  font-weight: bold;
-  color: #ffffff;
-  background: linear-gradient(135deg, #ff6a00, #ff4500);
-  padding: 10px 15px;
-  border-radius: 6px;
-  transition: 0.3s ease-in-out;
-  margin: 5px;
+.premium-button, .manage-button {
   display: inline-block;
-}
-
-.premium-section a:hover {
-  background: linear-gradient(135deg, #ff4500, #ff6a00);
-  transform: scale(1.05);
-}
-
-/* User Status */
-#userStatus {
   margin: 10px;
-  font-size: 1.2rem;
-  font-weight: bold;
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
 }
 
-/* Login Section (Fixed at bottom right) */
+.premium-button:hover, .manage-button:hover {
+  background: #1e7e34;
+}
+
 #loginSection {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #1e1e1e;
-  border-radius: 12px;
+  max-width: 400px;
+  margin: 30px auto;
   padding: 20px;
-  width: 300px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
 }
 
 #loginSection h2 {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
+  margin-top: 0;
 }
 
-#loginForm input,
-#registerForm input {
-  width: 100%;
+#loginForm, #registerForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#loginForm input, #registerForm input {
   padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  background-color: #252525;
-  color: #ffffff;
-  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-#loginForm button,
-#registerForm button {
-  background: linear-gradient(135deg, #ff6a00, #ff4500);
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: bold;
-  padding: 10px 20px;
+#loginForm button, #registerForm button {
+  padding: 10px;
   border: none;
-  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
 }
 
-#loginForm button:hover,
-#registerForm button:hover {
-  background: linear-gradient(135deg, #ff4500, #ff6a00);
-  transform: scale(1.05);
+#loginForm button:hover, #registerForm button:hover {
+  background: #0056b3;
 }
 
-/* Footer */
+#logoutButton {
+  margin: 20px auto;
+  display: block;
+  padding: 10px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#logoutButton:hover {
+  background: #c82333;
+}
+
 footer {
-  margin: 20px;
-  font-size: 14px;
-  color: #aaaaaa;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .converter-box {
-    width: 95%;
-  }
-  #loginSection {
-    position: relative;
-    bottom: 0;
-    right: 0;
-    width: 95%;
-    margin: 10px auto;
-  }
-  h1 {
-    font-size: 2rem;
-  }
+  text-align: center;
+  padding: 20px 10px;
+  background: #f1f1f1;
+  margin-top: 30px;
+  color: #666;
 }
