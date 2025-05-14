@@ -1,116 +1,66 @@
+Original style.css
+css
+Copy
+Edit
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #f9f9f9;
-  color: #333;
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
-header {
-  background: #111;
-  color: #fff;
-  text-align: center;
-  padding: 20px 10px;
+h1 {
+    margin-top: 20px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
+textarea {
+    width: 80%;
+    height: 150px;
+    margin: 20px 0;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
 }
 
-header p {
-  margin: 5px 0 0;
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: orange;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-main {
-  max-width: 800px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-}
-
-.converter-box {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.converter-box textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  resize: vertical;
-}
-
-.converter-box button {
-  padding: 10px;
-  border: none;
-  background: #007bff;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.converter-box button:hover {
-  background: #0056b3;
+button:hover {
+    background-color: darkorange;
 }
 
 #usageInfo, #timerDisplay {
-  margin-top: 10px;
-  font-weight: bold;
+    margin-top: 10px;
+    font-weight: bold;
 }
 
-.premium-section {
-  margin-top: 30px;
-  text-align: center;
-}
-
-.premium-button, .manage-button {
-  display: inline-block;
-  margin: 10px;
-  padding: 10px 20px;
-  background: #28a745;
-  color: white;
-  border-radius: 5px;
-  text-decoration: none;
-}
-
-.premium-button:hover, .manage-button:hover {
-  background: #1e7e34;
-}
-
-#loginSection {
-  max-width: 400px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-}
-
-#logoutButton {
-  margin: 20px auto;
-  display: block;
-  padding: 10px 20px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#logoutButton:hover {
-  background: #c82333;
+#userStatus {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 
 footer {
-  text-align: center;
-  padding: 20px 10px;
-  background: #f1f1f1;
-  margin-top: 30px;
-  color: #666;
+    margin-top: 40px;
+    padding: 10px;
+    background-color: #222;
+}
+
+a {
+    color: orange;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+a:hover {
+    text-decoration: underline;
 }
