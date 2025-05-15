@@ -1,4 +1,3 @@
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBMldQ1ZlHE2sSfbMNcfj7IlY6ZJ5njvdU",
   authDomain: "untrace-final.firebaseapp.com",
@@ -12,16 +11,16 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let isPremium = false;
-let promptData = null;
-let userEmail = null;
+let promptData = {};
+let userUid = null;
 
 auth.onAuthStateChanged(function(user) {
   if (user) {
-    userEmail = user.email.toLowerCase();
+    userUid = user.uid;
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('logoutButton').style.display = 'inline-block';
-    document.getElementById('userStatus').innerText = `Welcome, ${userEmail}`;
+    document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
     checkPremiumOnceAfterLogin();
   } else {
     document.getElementById('loginSection').style.display = 'block';
@@ -31,20 +30,16 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function checkPremiumOnceAfterLogin() {
-  db.collection('users').doc(userEmail).get()
+  db.collection('users').doc(auth.currentUser.uid).get()
     .then((doc) => {
-      if (doc.exists) {
-        isPremium = doc.data().premium === true;
-      } else {
-        isPremium = false;
-      }
-
-      if (isPremium) {
+      if (doc.exists && doc.data().premium === true) {
+        isPremium = true;
+        document.getElementById('userStatus').innerText += " ⭐ Premium";
         document.getElementById('usageInfo').innerText = "Unlimited prompts.";
         document.getElementById('timerDisplay').innerText = "";
-        document.getElementById('userStatus').innerText += " ⭐ Premium";
         localStorage.removeItem('promptUsage');
       } else {
+        isPremium = false;
         initializePromptTracking();
       }
     })
@@ -55,6 +50,25 @@ function checkPremiumOnceAfterLogin() {
     });
 }
 
+function checkPremiumLive() {
+  if (!auth.currentUser) {
+    document.getElementById('firestoreStatusOutput').innerText = "❌ Not logged in.";
+    return;
+  }
+  db.collection('users').doc(auth.currentUser.uid).get()
+    .then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById('firestoreStatusOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
+      } else {
+        document.getElementById('firestoreStatusOutput').innerText = "❌ No Firestore document found.";
+      }
+    })
+    .catch((error) => {
+      document.getElementById('firestoreStatusOutput').innerText = `❌ Error fetching document: ${error.message}`;
+    });
+}
+
 function sendVerificationEmail() {
   if (auth.currentUser) {
     auth.currentUser.sendEmailVerification()
@@ -62,7 +76,6 @@ function sendVerificationEmail() {
         document.getElementById('emailVerificationMessage').innerText = "✅ Verification email sent. Check your inbox and click the link. Then log out and log back in.";
       })
       .catch((error) => {
-        console.error("❌ Failed to send verification email:", error);
         document.getElementById('emailVerificationMessage').innerText = "❌ Failed to send verification email: " + error.message;
       });
   } else {
@@ -97,7 +110,7 @@ function proceedWithFreeUserFlow() {
     alert("Free users can only use up to 100 words per prompt.");
     return;
   }
-  let userData = promptData[userEmail];
+  let userData = promptData[userUid] || { remaining: 5, resetTime: null };
   const currentTime = new Date().getTime();
   if (!userData.resetTime) {
     userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
@@ -112,17 +125,17 @@ function proceedWithFreeUserFlow() {
     return;
   }
   userData.remaining--;
+  promptData[userUid] = userData;
   localStorage.setItem('promptUsage', JSON.stringify(promptData));
   updatePromptUI();
   proceedWithConversion();
 }
 
 function initializePromptTracking() {
-  const stored = JSON.parse(localStorage.getItem('promptUsage')) || {};
-  if (!stored[userEmail]) {
-    stored[userEmail] = { remaining: 5, resetTime: null };
+  promptData = JSON.parse(localStorage.getItem('promptUsage')) || {};
+  if (!promptData[userUid]) {
+    promptData[userUid] = { remaining: 5, resetTime: null };
   }
-  promptData = stored;
   updatePromptUI();
 }
 
@@ -132,7 +145,7 @@ function updatePromptUI() {
     document.getElementById('timerDisplay').innerText = "";
     return;
   }
-  const userData = promptData[userEmail];
+  const userData = promptData[userUid];
   document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/5`;
   if (userData.resetTime) {
     startCountdown(userData.resetTime);
@@ -146,7 +159,7 @@ function startCountdown(endTime) {
     const timeLeft = endTime - now;
     if (timeLeft <= 0) {
       timerDisplay.innerText = "Prompt limit reset!";
-      promptData[userEmail] = { remaining: 5, resetTime: null };
+      promptData[userUid] = { remaining: 5, resetTime: null };
       localStorage.setItem('promptUsage', JSON.stringify(promptData));
       updatePromptUI();
       return;
@@ -193,23 +206,3 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
       document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
     });
 });
-
-function checkPremiumLive() {
-  if (!auth.currentUser) {
-    document.getElementById('firestoreStatusOutput').innerText = "❌ Not logged in.";
-    return;
-  }
-  const checkEmail = auth.currentUser.email.toLowerCase();
-  db.collection('users').doc(checkEmail).get()
-    .then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        document.getElementById('firestoreStatusOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
-      } else {
-        document.getElementById('firestoreStatusOutput').innerText = "❌ No Firestore document found.";
-      }
-    })
-    .catch((error) => {
-      document.getElementById('firestoreStatusOutput').innerText = `❌ Error fetching document: ${error.message}`;
-    });
-}
