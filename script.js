@@ -31,16 +31,19 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function checkPremiumOnceAfterLogin() {
+  console.log(`Checking Firestore for user: ${userEmail}`);
   db.collection('users').doc(userEmail).get()
     .then((doc) => {
       if (doc.exists) {
+        console.log("Firestore doc found:", doc.data());
         isPremium = doc.data().premium === true;
+        console.log(`Premium detected? ${isPremium}`);
       } else {
+        console.log("Firestore doc not found");
         isPremium = false;
       }
 
       if (isPremium) {
-        console.log(`✅ Premium confirmed for ${userEmail}`);
         document.getElementById('usageInfo').innerText = "Unlimited prompts.";
         document.getElementById('timerDisplay').innerText = "";
         document.getElementById('userStatus').innerText += " ⭐ Premium";
@@ -179,3 +182,28 @@ function startCountdown(endTime) {
   updateTimer();
   setInterval(updateTimer, 60000);
 }
+
+// Diagnostic Tool
+document.getElementById('checkPremiumButton').addEventListener('click', function () {
+  if (!auth.currentUser) {
+    alert("Please login first.");
+    return;
+  }
+  const checkEmail = auth.currentUser.email.toLowerCase();
+  console.log(`🔍 Checking Firestore document for: ${checkEmail}`);
+  db.collection('users').doc(checkEmail).get()
+    .then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        console.log(`✅ Firestore doc found:`, data);
+        document.getElementById('diagnosticOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
+      } else {
+        console.log("❌ No Firestore document found.");
+        document.getElementById('diagnosticOutput').innerText = "❌ No Firestore document found.";
+      }
+    })
+    .catch((error) => {
+      console.error('❌ Error fetching document:', error);
+      document.getElementById('diagnosticOutput').innerText = `❌ Error fetching document: ${error.message}`;
+    });
+});
