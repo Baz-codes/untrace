@@ -6,7 +6,6 @@
   <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
@@ -34,6 +33,11 @@
     <div id="firestoreDiagnostic" style="margin-top:20px; padding:10px; border:1px solid gray;">
       <button onclick="checkPremiumLive()">Check Premium Status (On-screen)</button>
       <div id="firestoreStatusOutput"></div>
+    </div>
+
+    <div id="emailVerificationSection" style="margin-top:20px; padding:10px; border:1px solid gray;">
+      <button onclick="sendVerificationEmail()">Send Verification Email</button>
+      <div id="emailVerificationMessage"></div>
     </div>
   </main>
 
