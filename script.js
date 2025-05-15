@@ -31,15 +31,11 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function checkPremiumOnceAfterLogin() {
-  console.log(`Checking Firestore for user: ${userEmail}`);
   db.collection('users').doc(userEmail).get()
     .then((doc) => {
       if (doc.exists) {
-        console.log("Firestore doc found:", doc.data());
         isPremium = doc.data().premium === true;
-        console.log(`Premium detected? ${isPremium}`);
       } else {
-        console.log("Firestore doc not found");
         isPremium = false;
       }
 
@@ -58,41 +54,6 @@ function checkPremiumOnceAfterLogin() {
       initializePromptTracking();
     });
 }
-
-document.getElementById('logoutButton').addEventListener('click', function () {
-  auth.signOut().then(() => {
-    alert("You have been logged out.");
-    location.reload();
-  }).catch((error) => {
-    console.error('Logout failed:', error);
-  });
-});
-
-document.getElementById('loginForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const email = document.getElementById('email').value.toLowerCase();
-  const password = document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      document.getElementById('loginMessage').innerText = "Login successful!";
-    })
-    .catch((error) => {
-      document.getElementById('loginMessage').innerText = "Login failed: " + error.message;
-    });
-});
-
-document.getElementById('registerForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  const email = document.getElementById('registerEmail').value.toLowerCase();
-  const password = document.getElementById('registerPassword').value;
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      document.getElementById('registerMessage').innerText = "Registration successful! You can now log in.";
-    })
-    .catch((error) => {
-      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
-    });
-});
 
 function convertText() {
   if (!auth.currentUser) {
@@ -183,27 +144,61 @@ function startCountdown(endTime) {
   setInterval(updateTimer, 60000);
 }
 
-// Diagnostic Tool
-document.getElementById('checkPremiumButton').addEventListener('click', function () {
+document.getElementById('logoutButton').addEventListener('click', function () {
+  auth.signOut().then(() => {
+    alert("You have been logged out.");
+    location.reload();
+  }).catch((error) => {
+    console.error('Logout failed:', error);
+  });
+});
+
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.toLowerCase();
+  const password = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      document.getElementById('loginMessage').innerText = "Login successful!";
+    })
+    .catch((error) => {
+      document.getElementById('loginMessage').innerText = "Login failed: " + error.message;
+    });
+});
+
+document.getElementById('registerForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const email = document.getElementById('registerEmail').value.toLowerCase();
+  const password = document.getElementById('registerPassword').value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      document.getElementById('registerMessage').innerText = "Registration successful! You can now log in.";
+    })
+    .catch((error) => {
+      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
+    });
+});
+
+// On-screen Diagnostic Tool
+function checkPremiumLive() {
   if (!auth.currentUser) {
-    alert("Please login first.");
+    document.getElementById('firestoreStatusOutput').innerText = "❌ Not logged in.";
     return;
   }
   const checkEmail = auth.currentUser.email.toLowerCase();
-  console.log(`🔍 Checking Firestore document for: ${checkEmail}`);
   db.collection('users').doc(checkEmail).get()
     .then((doc) => {
       if (doc.exists) {
         const data = doc.data();
         console.log(`✅ Firestore doc found:`, data);
-        document.getElementById('diagnosticOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
+        document.getElementById('firestoreStatusOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
       } else {
         console.log("❌ No Firestore document found.");
-        document.getElementById('diagnosticOutput').innerText = "❌ No Firestore document found.";
+        document.getElementById('firestoreStatusOutput').innerText = "❌ No Firestore document found.";
       }
     })
     .catch((error) => {
       console.error('❌ Error fetching document:', error);
-      document.getElementById('diagnosticOutput').innerText = `❌ Error fetching document: ${error.message}`;
+      document.getElementById('firestoreStatusOutput').innerText = `❌ Error fetching document: ${error.message}`;
     });
-});
+}
