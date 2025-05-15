@@ -50,39 +50,6 @@ function checkPremiumOnceAfterLogin() {
     });
 }
 
-function checkPremiumLive() {
-  if (!auth.currentUser) {
-    document.getElementById('firestoreStatusOutput').innerText = "❌ Not logged in.";
-    return;
-  }
-  db.collection('users').doc(auth.currentUser.uid).get()
-    .then((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        document.getElementById('firestoreStatusOutput').innerText = `Document Found:\n${JSON.stringify(data, null, 2)}\n\nPremium: ${data.premium === true ? '✅ YES' : '❌ NO'}`;
-      } else {
-        document.getElementById('firestoreStatusOutput').innerText = "❌ No Firestore document found.";
-      }
-    })
-    .catch((error) => {
-      document.getElementById('firestoreStatusOutput').innerText = `❌ Error fetching document: ${error.message}`;
-    });
-}
-
-function sendVerificationEmail() {
-  if (auth.currentUser) {
-    auth.currentUser.sendEmailVerification()
-      .then(() => {
-        document.getElementById('emailVerificationMessage').innerText = "✅ Verification email sent. Check your inbox and click the link. Then log out and log back in.";
-      })
-      .catch((error) => {
-        document.getElementById('emailVerificationMessage').innerText = "❌ Failed to send verification email: " + error.message;
-      });
-  } else {
-    document.getElementById('emailVerificationMessage').innerText = "❌ Please login first.";
-  }
-}
-
 function convertText() {
   if (!auth.currentUser) {
     alert("Please login first.");
