@@ -31,12 +31,10 @@ auth.onAuthStateChanged(function(user) {
 });
 
 function checkPremiumOnceAfterLogin() {
-  db.collection('users').where('email', '==', userEmail).get()
-    .then((snapshot) => {
-      if (!snapshot.empty) {
-        snapshot.forEach((doc) => {
-          isPremium = doc.data().premium === true;
-        });
+  db.collection('users').doc(userEmail).get()
+    .then((doc) => {
+      if (doc.exists) {
+        isPremium = doc.data().premium === true;
       } else {
         isPremium = false;
       }
