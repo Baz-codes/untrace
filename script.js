@@ -1,3 +1,4 @@
+// (your original file content begins)
 const firebaseConfig = {
   apiKey: "AIzaSyBMldQ1ZlHE2sSfbMNcfj7IlY6ZJ5njvdU",
   authDomain: "untrace-final.firebaseapp.com",
@@ -170,6 +171,73 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
       document.getElementById('registerMessage').innerText = "Registration successful! You can now log in.";
     })
     .catch((error) => {
-      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
+      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message.";
     });
 });
+
+// (your original file content ends)
+
+
+// === ADDED: route your existing "Subscribe Now" link through your Cloud Function ===
+// Forces Stripe to use the Firebase email and includes metadata.uid.
+// Falls back to the original link if anything fails (so nothing breaks).
+(() => {
+  const link = document.querySelector('.premium-section a[href*="buy.stripe.com"]');
+  if (!link) return;
+
+  // Your LIVE Stripe Price ID (you provided this)
+  const STRIPE_PRICE_ID = 'price_1QrFfLJB5iSnPCgrxmoIifO0';
+
+  // Your deployed function URL from the deploy output
+  const CREATE_SESSION_URL = 'https://us-central1-untrace-final.cloudfunctions.net/createCheckoutSession';
+
+  link.addEventListener('click', async (e) => {
+    try {
+      // If user not logged in, keep default behavior (let them pay or show your existing UI)
+      const user = auth.currentUser;
+      if (!user) {
+        // optional: enforce login
+        // e.preventDefault(); alert('Please log in first.'); return;
+        return;
+      }
+
+      // Intercept click and use backend-created session
+      e.preventDefault();
+
+      const idToken = await user.getIdToken();
+
+      const resp = await fetch(CREATE_SESSION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          priceId: STRIPE_PRICE_ID,
+          successUrl: window.location.origin + '/?status=success',
+          cancelUrl:  window.location.origin + '/?status=cancel'
+        })
+      });
+
+      if (!resp.ok) {
+        // Backend failed — fall back so user isn’t blocked
+        console.error('createCheckoutSession failed, falling back to static link:', await resp.text());
+        window.location.href = link.href;
+        return;
+      }
+
+      const data = await resp.json();
+      if (!data || !data.url) {
+        console.error('No session URL returned, falling back to static link.');
+        window.location.href = link.href;
+        return;
+      }
+
+      // Redirect to Stripe Checkout created by backend (forces email + metadata.uid)
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('Checkout error, falling back to static link:', err);
+      window.location.href = link.href;
+    }
+  });
+})();
