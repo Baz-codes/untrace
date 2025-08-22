@@ -4,40 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
+
+  <!-- Brand & SEO helpers -->
+  <link rel="icon" href="/robot-favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <meta name="description" content="UntraceAI Premium: unlimited words and prompts with secure Stripe checkout. Cancel anytime." />
+
   <link rel="stylesheet" href="style.css" />
 
+  <!-- Firebase (unchanged) -->
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <header>
+  <!-- Header / Branding -->
+  <header class="site-header">
+    <!-- Your provided logo (place logo.png in the project root) -->
+    <img src="/logo.png" alt="UntraceAI logo" class="brand-logo" width="360" height="120" />
+    <div class="header-subline">Secure checkout by Stripe • Cancel anytime</div>
+
+    <!-- Your original headline + tagline (unchanged) -->
     <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
     <p>Bypasses AI detection without changing wording!</p>
   </header>
 
   <main>
+    <!-- Converter -->
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
       <button onclick="convertText()">Convert Text</button>
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
+
       <div id="usageInfo"></div>
       <div id="timerDisplay"></div>
-      <div style="margin-top:15px; font-size: 0.9rem; color: gray;">
-        Simply paste the converted text into your document and manually ignore any underlined "spelling" errors.  
-        You will bypass all AI detectors such as Turnitin and ZeroGPT.  
+
+      <div class="note">
+        Simply paste the converted text into your document and manually ignore any underlined "spelling" errors.
+        You will bypass all AI detectors such as Turnitin and ZeroGPT.
         <b>Note:</b> Nothing is actually spelt incorrectly — it just bypasses detection systems.
       </div>
     </div>
 
+    <!-- Premium -->
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
-      <!-- your ORIGINAL Subscribe link (unchanged) -->
+
+      <!-- Your original links (kept exactly) -->
       <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a><br><br>
       <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="premium-button">Manage Subscription</a>
+
+      <!-- Trust badges (purely visual) -->
+      <div class="trust-row" aria-label="Trust and Safety">
+        <span class="pill">🔒 Secure by Stripe</span>
+        <span class="pill">⚡ Instant activation</span>
+        <span class="pill">⛔ Cancel anytime</span>
+      </div>
     </div>
   </main>
 
+  <!-- Auth (unchanged structure/IDs for JS) -->
   <section id="loginSection">
     <h2>Login</h2>
     <form id="loginForm">
@@ -59,10 +87,17 @@
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
   <button id="logoutButton" style="display:none;">Logout</button>
 
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
+    <p class="footer-links">
+      <a href="/terms" class="foot-link">Terms</a> ·
+      <a href="/privacy" class="foot-link">Privacy</a> ·
+      <a href="mailto:UntraceAI@mail.com" class="foot-link">Contact</a>
+    </p>
   </footer>
 
+  <!-- Your JS (unchanged) -->
   <script src="script.js"></script>
 </body>
 </html>
