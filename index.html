@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
 
+  <!-- Favicon uses the robot file you provided -->
   <link rel="icon" href="/robot-favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,11 +20,17 @@
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- Header / Branding (integrated hero background) -->
+  <!-- Header / Hero -->
   <header class="site-header hero">
-    <img src="/logo.png" alt="UntraceAI logo" class="brand-logo" width="360" height="120" />
-    <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
-    <p>Bypasses AI detection without changing wording!</p>
+    <div class="hero-wrap">
+      <!-- Big transparent robot next to title -->
+      <img src="/robot-favicon.png" alt="UntraceAI robot" class="hero-robot" width="140" height="140" />
+
+      <div class="hero-text">
+        <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
+        <p>Bypasses AI detection without changing wording!</p>
+      </div>
+    </div>
   </header>
 
   <main>
@@ -31,10 +38,10 @@
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
 
-      <!-- Convert + Robot -->
+      <!-- Convert + Robot (small visual beside button) -->
       <div class="convert-actions">
         <button onclick="convertText()">Convert Text</button>
-        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="36" height="36" />
+        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="40" height="40" />
       </div>
 
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
@@ -53,7 +60,7 @@
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
 
-      <!-- original links -->
+      <!-- Original links (unchanged) -->
       <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a><br><br>
       <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="premium-button">Manage Subscription</a>
 
@@ -65,7 +72,7 @@
     </div>
   </main>
 
-  <!-- Auth (fixed; IDs unchanged) -->
+  <!-- Auth (fixed; IDs unchanged for your JS) -->
   <section id="loginSection" class="login-fixed">
     <h2>Login</h2>
     <form id="loginForm">
@@ -89,6 +96,7 @@
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
   <button id="logoutButton" style="display:none;">Logout</button>
 
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
     <p class="footer-links">
@@ -98,9 +106,10 @@
     </p>
   </footer>
 
-  <!-- Floating support pill (moved up so it never overlaps) -->
+  <!-- Floating support pill (tucked; no overlap) -->
   <a class="support-pill" href="mailto:UntraceAI@mail.com" aria-label="Contact support">Need help? Contact support</a>
 
+  <!-- Your JS (unchanged) -->
   <script src="script.js"></script>
 </body>
 </html>
