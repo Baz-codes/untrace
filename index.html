@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UntraceAI - The Ultimate AI Detection Bypass Tool</title>
 
-  <!-- Brand & SEO helpers -->
   <link rel="icon" href="/robot-favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,12 +19,9 @@
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- Header / Branding -->
-  <header class="site-header">
-    <!-- Your provided logo (place /logo.png at site root) -->
+  <!-- Header / Branding (integrated hero background) -->
+  <header class="site-header hero">
     <img src="/logo.png" alt="UntraceAI logo" class="brand-logo" width="360" height="120" />
-
-    <!-- Your original headline + tagline (unchanged) -->
     <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
     <p>Bypasses AI detection without changing wording!</p>
   </header>
@@ -35,10 +31,10 @@
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
 
-      <!-- Convert button + robot icon (visual only) -->
+      <!-- Convert + Robot -->
       <div class="convert-actions">
         <button onclick="convertText()">Convert Text</button>
-        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="28" height="28" />
+        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="36" height="36" />
       </div>
 
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
@@ -57,20 +53,19 @@
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
 
-      <!-- Your original links (kept exactly) -->
+      <!-- original links -->
       <a href="https://buy.stripe.com/bIY3dD6hScQj2fm6oo" class="premium-button">Subscribe Now</a><br><br>
       <a href="https://billing.stripe.com/p/login/4gwbJA2pfcXr8necMM" class="premium-button">Manage Subscription</a>
 
-      <!-- Trust badges (purely visual) -->
       <div class="trust-row" aria-label="Trust and Safety">
-        <span class="pill">🔒 Secure by Stripe</span>
+        <span class="pill">🔒 Secured by Stripe</span>
         <span class="pill">⚡ Instant activation</span>
         <span class="pill">⛔ Cancel anytime</span>
       </div>
     </div>
   </main>
 
-  <!-- Auth (unchanged structure/IDs for JS) -->
+  <!-- Auth (fixed; IDs unchanged) -->
   <section id="loginSection" class="login-fixed">
     <h2>Login</h2>
     <form id="loginForm">
@@ -88,14 +83,12 @@
     </form>
     <div id="registerMessage"></div>
 
-    <!-- Small nudge for when users try to convert while logged out -->
     <div class="login-hint">Tip: Please log in here first.</div>
   </section>
 
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
   <button id="logoutButton" style="display:none;">Logout</button>
 
-  <!-- Footer -->
   <footer>
     <p>&copy; 2025 UntraceAI. All rights reserved.</p>
     <p class="footer-links">
@@ -105,10 +98,9 @@
     </p>
   </footer>
 
-  <!-- Floating support pill for visibility -->
+  <!-- Floating support pill (moved up so it never overlaps) -->
   <a class="support-pill" href="mailto:UntraceAI@mail.com" aria-label="Contact support">Need help? Contact support</a>
 
-  <!-- Your JS (unchanged) -->
   <script src="script.js"></script>
 </body>
 </html>
