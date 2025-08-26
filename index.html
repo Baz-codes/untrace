@@ -20,7 +20,7 @@
   <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <!-- Header / Hero -->
+  <!-- Hero -->
   <header class="site-header hero">
     <div class="hero-wrap">
       <!-- Big transparent robot next to title -->
@@ -38,10 +38,8 @@
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
 
-      <!-- Convert + Robot (small visual beside button) -->
       <div class="convert-actions">
         <button onclick="convertText()">Convert Text</button>
-        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="40" height="40" />
       </div>
 
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
@@ -56,7 +54,26 @@
       </div>
     </div>
 
-    <!-- Premium -->
+    <!-- Login & Register (inline, under converter; JS still controls visibility) -->
+    <section id="loginSection">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <div id="loginMessage"></div>
+
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="email" id="registerEmail" placeholder="Email" required />
+        <input type="password" id="registerPassword" placeholder="Password" required />
+        <button type="submit">Register</button>
+      </form>
+      <div id="registerMessage"></div>
+    </section>
+
+    <!-- Premium (sits below login when logged out; when logged in the loginSection is hidden by your JS so this moves up automatically) -->
     <div class="premium-section">
       <h2>Upgrade to Unlimited Prompts</h2>
 
@@ -72,27 +89,7 @@
     </div>
   </main>
 
-  <!-- Auth (fixed; IDs unchanged for your JS) -->
-  <section id="loginSection" class="login-fixed">
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-    <div id="loginMessage"></div>
-
-    <h2>Register</h2>
-    <form id="registerForm">
-      <input type="email" id="registerEmail" placeholder="Email" required />
-      <input type="password" id="registerPassword" placeholder="Password" required />
-      <button type="submit">Register</button>
-    </form>
-    <div id="registerMessage"></div>
-
-    <div class="login-hint">Tip: Please log in here first.</div>
-  </section>
-
+  <!-- User status (unchanged IDs) -->
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
   <button id="logoutButton" style="display:none;">Logout</button>
 
@@ -106,8 +103,8 @@
     </p>
   </footer>
 
-  <!-- Floating support pill (tucked; no overlap) -->
-  <a class="support-pill" href="mailto:UntraceAI@mail.com" aria-label="Contact support">Need help? Contact support</a>
+  <!-- Floating support pill in the VERY bottom-left corner -->
+  <a class="support-pill" href="mailto:UntraceAI@mail.com" aria-label="Contact support">Contact support</a>
 
   <!-- Your JS (unchanged) -->
   <script src="script.js"></script>
