@@ -22,9 +22,8 @@
 <body>
   <!-- Header / Branding -->
   <header class="site-header">
-    <!-- Your provided logo (place logo.png in the project root) -->
+    <!-- Your provided logo (place /logo.png at site root) -->
     <img src="/logo.png" alt="UntraceAI logo" class="brand-logo" width="360" height="120" />
-    <div class="header-subline">Secure checkout by Stripe • Cancel anytime</div>
 
     <!-- Your original headline + tagline (unchanged) -->
     <h1>UntraceAI - The Ultimate AI Detection Bypass Tool</h1>
@@ -35,7 +34,13 @@
     <!-- Converter -->
     <div class="converter-box">
       <textarea id="inputText" placeholder="Enter text here..."></textarea>
-      <button onclick="convertText()">Convert Text</button>
+
+      <!-- Convert button + robot icon (visual only) -->
+      <div class="convert-actions">
+        <button onclick="convertText()">Convert Text</button>
+        <img src="/robot-favicon.png" alt="UntraceAI robot" class="robot-inline" width="28" height="28" />
+      </div>
+
       <textarea id="outputText" readonly placeholder="Converted text will appear here..."></textarea>
 
       <div id="usageInfo"></div>
@@ -66,7 +71,7 @@
   </main>
 
   <!-- Auth (unchanged structure/IDs for JS) -->
-  <section id="loginSection">
+  <section id="loginSection" class="login-fixed">
     <h2>Login</h2>
     <form id="loginForm">
       <input type="email" id="email" placeholder="Email" required />
@@ -82,6 +87,9 @@
       <button type="submit">Register</button>
     </form>
     <div id="registerMessage"></div>
+
+    <!-- Small nudge for when users try to convert while logged out -->
+    <div class="login-hint">Tip: Please log in here first.</div>
   </section>
 
   <div id="userStatus" style="display: none; margin-top: 20px; font-size: 1.2rem; font-weight: bold;"></div>
@@ -96,6 +104,9 @@
       <a href="mailto:UntraceAI@mail.com" class="foot-link">Contact</a>
     </p>
   </footer>
+
+  <!-- Floating support pill for visibility -->
+  <a class="support-pill" href="mailto:UntraceAI@mail.com" aria-label="Contact support">Need help? Contact support</a>
 
   <!-- Your JS (unchanged) -->
   <script src="script.js"></script>
