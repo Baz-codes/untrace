@@ -1,4 +1,3 @@
-// (your original file content begins)
 const firebaseConfig = {
   apiKey: "AIzaSyBMldQ1ZlHE2sSfbMNcfj7IlY6ZJ5njvdU",
   authDomain: "untrace-final.firebaseapp.com",
@@ -73,23 +72,23 @@ function proceedWithConversion() {
 
 function proceedWithFreeUserFlow() {
   const text = document.getElementById('inputText').value;
-  const wordCount = text.trim().split(/\s+/).length;
-  if (wordCount > 100) {
-    alert("Free users can only use up to 100 words per prompt.");
+  const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+  if (wordCount > 75) {
+    alert("Free users can only use up to 75 words per prompt.");
     return;
   }
-  let userData = promptData[userUid] || { remaining: 5, resetTime: null };
+  let userData = promptData[userUid] || { remaining: 3, resetTime: null };
   const currentTime = new Date().getTime();
   if (!userData.resetTime) {
     userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
     startCountdown(userData.resetTime);
   } else if (currentTime >= userData.resetTime) {
-    userData.remaining = 5;
+    userData.remaining = 3;
     userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
     startCountdown(userData.resetTime);
   }
   if (userData.remaining <= 0) {
-    alert("You've used all your 5 free prompts. Please wait for reset or upgrade to premium.");
+    alert("You've used all your 3 free prompts. Please wait for reset or upgrade to premium.");
     return;
   }
   userData.remaining--;
@@ -102,7 +101,7 @@ function proceedWithFreeUserFlow() {
 function initializePromptTracking() {
   promptData = JSON.parse(localStorage.getItem('promptUsage')) || {};
   if (!promptData[userUid]) {
-    promptData[userUid] = { remaining: 5, resetTime: null };
+    promptData[userUid] = { remaining: 3, resetTime: null };
   }
   updatePromptUI();
 }
@@ -114,7 +113,7 @@ function updatePromptUI() {
     return;
   }
   const userData = promptData[userUid];
-  document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/5`;
+  document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/3`;
   if (userData.resetTime) {
     startCountdown(userData.resetTime);
   }
@@ -127,7 +126,7 @@ function startCountdown(endTime) {
     const timeLeft = endTime - now;
     if (timeLeft <= 0) {
       timerDisplay.innerText = "Prompt limit reset!";
-      promptData[userUid] = { remaining: 5, resetTime: null };
+      promptData[userUid] = { remaining: 3, resetTime: null };
       localStorage.setItem('promptUsage', JSON.stringify(promptData));
       updatePromptUI();
       return;
@@ -175,9 +174,6 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
       document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
     });
 });
-
-// (your original file content ends)
-
 
 // === ADDED: route your existing "Subscribe Now" link through your Cloud Function ===
 // Forces Stripe to use the Firebase email and includes metadata.uid.
