@@ -1,3 +1,4 @@
+// Firebase config & setup
 const firebaseConfig = {
   apiKey: "AIzaSyBMldQ1ZlHE2sSfbMNcfj7IlY6ZJ5njvdU",
   authDomain: "untrace-final.firebaseapp.com",
@@ -14,7 +15,88 @@ let isPremium = false;
 let promptData = {};
 let userUid = null;
 
-auth.onAuthStateChanged(function(user) {
+/* =========================
+   Email & signup protection
+   ========================= */
+
+// Simple but strict email pattern: something@something.tld
+function isPlausibleEmail(email) {
+  if (!email) return false;
+
+  email = email.trim();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,10}$/;
+  if (!emailRegex.test(email)) return false;
+
+  const blockedDomains = [
+    "example.com",
+    "test.com",
+    "fake.com",
+    "mailinator.com",
+    "tempmail.com",
+    "10minutemail.com",
+  ];
+
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return false;
+  if (local.length < 3) return false;
+  if (/^[0-9]+$/.test(local)) return false;
+  if (local.includes("test") || local.includes("fake")) return false;
+
+  const lowerDomain = domain.toLowerCase();
+  if (blockedDomains.some(d => lowerDomain.endsWith(d))) return false;
+
+  return true;
+}
+
+// Per-browser signup limit (very simple)
+const SIGNUP_LIMIT_PER_DAY = 3;
+
+function canRegisterFromThisBrowser() {
+  const key = "untrace_signup_stats";
+  const today = new Date().toISOString().slice(0, 10);
+
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem(key)) || {};
+  } catch {
+    data = {};
+  }
+
+  if (data.date !== today) {
+    data = { date: today, count: 0 };
+  }
+
+  if (data.count >= SIGNUP_LIMIT_PER_DAY) {
+    return false;
+  }
+  return true;
+}
+
+function recordSuccessfulSignup() {
+  const key = "untrace_signup_stats";
+  const today = new Date().toISOString().slice(0, 10);
+
+  let data;
+  try {
+    data = JSON.parse(localStorage.getItem(key)) || {};
+  } catch {
+    data = {};
+  }
+
+  if (data.date !== today) {
+    data = { date: today, count: 0 };
+  }
+
+  data.count += 1;
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+/* =========================
+   Auth state handling
+   ========================= */
+
+auth.onAuthStateChanged(function (user) {
   if (user) {
     userUid = user.uid;
     document.getElementById('loginSection').style.display = 'none';
@@ -23,9 +105,11 @@ auth.onAuthStateChanged(function(user) {
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
     checkPremiumOnceAfterLogin();
   } else {
+    userUid = null;
     document.getElementById('loginSection').style.display = 'block';
     document.getElementById('userStatus').style.display = 'none';
     document.getElementById('logoutButton').style.display = 'none';
+    isPremium = false;
   }
 });
 
@@ -49,6 +133,10 @@ function checkPremiumOnceAfterLogin() {
       initializePromptTracking();
     });
 }
+
+/* =========================
+   Conversion & free-tier logic
+   ========================= */
 
 function convertText() {
   if (!auth.currentUser) {
@@ -77,8 +165,10 @@ function proceedWithFreeUserFlow() {
     alert("Free users can only use up to 75 words per prompt.");
     return;
   }
+
   let userData = promptData[userUid] || { remaining: 3, resetTime: null };
   const currentTime = new Date().getTime();
+
   if (!userData.resetTime) {
     userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
     startCountdown(userData.resetTime);
@@ -87,10 +177,12 @@ function proceedWithFreeUserFlow() {
     userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
     startCountdown(userData.resetTime);
   }
+
   if (userData.remaining <= 0) {
     alert("You've used all your 3 free prompts. Please wait for reset or upgrade to premium.");
     return;
   }
+
   userData.remaining--;
   promptData[userUid] = userData;
   localStorage.setItem('promptUsage', JSON.stringify(promptData));
@@ -113,7 +205,8 @@ function updatePromptUI() {
     return;
   }
   const userData = promptData[userUid];
-  document.getElementById('usageInfo').innerText = `Prompts remaining: ${userData.remaining}/3`;
+  document.getElementById('usageInfo').innerText =
+    `Prompts remaining: ${userData.remaining}/3`;
   if (userData.resetTime) {
     startCountdown(userData.resetTime);
   }
@@ -121,6 +214,7 @@ function updatePromptUI() {
 
 function startCountdown(endTime) {
   const timerDisplay = document.getElementById('timerDisplay');
+
   function updateTimer() {
     const now = new Date().getTime();
     const timeLeft = endTime - now;
@@ -135,9 +229,14 @@ function startCountdown(endTime) {
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     timerDisplay.innerText = `Next reset in: ${hours}h ${minutes}m`;
   }
+
   updateTimer();
   setInterval(updateTimer, 60000);
 }
+
+/* =========================
+   Logout
+   ========================= */
 
 document.getElementById('logoutButton').addEventListener('click', function () {
   auth.signOut().then(() => {
@@ -147,6 +246,10 @@ document.getElementById('logoutButton').addEventListener('click', function () {
     console.error('Logout failed:', error);
   });
 });
+
+/* =========================
+   Login
+   ========================= */
 
 document.getElementById('loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -161,38 +264,82 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     });
 });
 
-document.getElementById('registerForm').addEventListener('submit', function (e) {
+/* =========================
+   Register (no Kickbox; local checks only)
+   ========================= */
+
+document.getElementById('registerForm').addEventListener('submit', async function (e) {
   e.preventDefault();
-  const email = document.getElementById('registerEmail').value.toLowerCase();
-  const password = document.getElementById('registerPassword').value;
+  const emailInput = document.getElementById('registerEmail');
+  const passwordInput = document.getElementById('registerPassword');
+  const msgEl = document.getElementById('registerMessage');
+
+  const email = emailInput.value.toLowerCase().trim();
+  const password = passwordInput.value;
+
+  msgEl.style.color = '';
+  msgEl.innerText = "";
+
+  // Per-browser signup limit
+  if (!canRegisterFromThisBrowser()) {
+    msgEl.style.color = 'red';
+    msgEl.innerText =
+      "Too many new accounts from this browser today. Please try again tomorrow or log in to your existing account.";
+    return;
+  }
+
+  // Email sanity
+  if (!isPlausibleEmail(email)) {
+    msgEl.style.color = 'red';
+    msgEl.innerText =
+      "Please enter a real email address (e.g. your uni or personal email).";
+    return;
+  }
+
+  // Simple password sanity
+  if (password.length < 6) {
+    msgEl.style.color = 'red';
+    msgEl.innerText = "Password must be at least 6 characters.";
+    return;
+  }
+
+  msgEl.innerText = "Creating your account...";
+
   auth.createUserWithEmailAndPassword(email, password)
     .then(() => {
-      document.getElementById('registerMessage').innerText = "Registration successful! You can now log in.";
+      recordSuccessfulSignup();
+      msgEl.style.color = '';
+      msgEl.innerText = "Registration successful! You can now log in.";
     })
     .catch((error) => {
-      // ✅ fixed: removed the stray quote that broke the file
-      document.getElementById('registerMessage').innerText = "Registration failed: " + error.message;
+      msgEl.style.color = 'red';
+      msgEl.innerText = "Registration failed: " + error.message;
     });
 });
 
-// === ADDED: route your existing "Subscribe Now" link through your Cloud Function ===
+/* =========================
+   Stripe checkout interception
+   ========================= */
+
+// Route your "Subscribe Now" link through your Cloud Function.
 // Forces Stripe to use the Firebase email and includes metadata.uid.
 // Falls back to the original link if anything fails (so nothing breaks).
 (() => {
   const link = document.querySelector('.premium-section a[href*="buy.stripe.com"]');
   if (!link) return;
 
-  // Your LIVE Stripe Price ID (you provided this)
+  // Your LIVE Stripe Price ID
   const STRIPE_PRICE_ID = 'price_1QrFfLJB5iSnPCgrxmoIifO0';
 
   // Your deployed function URL from the deploy output
-  const CREATE_SESSION_URL = 'https://us-central1-untrace-final.cloudfunctions.net/createCheckoutSession';
+  const CREATE_SESSION_URL =
+    'https://us-central1-untrace-final.cloudfunctions.net/createCheckoutSession';
 
   link.addEventListener('click', async (e) => {
     try {
       const user = auth.currentUser;
 
-      // If user not logged in, keep default behavior (no change to your existing flow)
+      // If user not logged in, keep default behavior
       if (!user) return;
 
       // Intercept click and use backend-created session
@@ -209,12 +356,11 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
         body: JSON.stringify({
           priceId: STRIPE_PRICE_ID,
           successUrl: window.location.origin + '/?status=success',
-          cancelUrl:  window.location.origin + '/?status=cancel'
+          cancelUrl: window.location.origin + '/?status=cancel'
         })
       });
 
       if (!resp.ok) {
-        // Backend failed — fall back so user isn’t blocked
         console.error('createCheckoutSession failed, falling back to static link:', await resp.text());
         window.location.href = link.href;
         return;
@@ -227,7 +373,6 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
         return;
       }
 
-      // Redirect to Stripe Checkout created by backend (forces email + metadata.uid)
       window.location.href = data.url;
     } catch (err) {
       console.error('Checkout error, falling back to static link:', err);
