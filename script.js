@@ -69,7 +69,7 @@ document.getElementById('sendVerification').addEventListener('click', async () =
   const user = auth.currentUser;
   if (user) {
     await user.sendEmailVerification();
-    alert("Verification email sent! Check your inbox or spam folder.");
+    alert("Verification email sent again! Check your inbox or spam folder, click the link, then reload this page.");
   }
 });
 
@@ -122,7 +122,14 @@ function handleUnverifiedUser() {
   const lastUse = localStorage.getItem(key);
   const today = new Date().toISOString().slice(0, 10);
   if (lastUse === today) {
-    alert("You’ve reached your free prompt limit. Please verify your email to continue using UntraceAI.");
+    const user = auth.currentUser;
+    const email = user ? user.email : "your email";
+    alert(
+      "You’ve reached your free prompt limit for today.\n\n" +
+      `To continue using UntraceAI, please verify your email.\n\n` +
+      `We sent a verification link to ${email} when you signed up. ` +
+      "Open that email, click the verification link, then reload this page to unlock your 3 free daily prompts."
+    );
     return;
   }
   localStorage.setItem(key, today);
@@ -190,7 +197,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     await cred.user.sendEmailVerification();
     recordSuccessfulSignup();
-    msg.innerText = "Account created! You can use 1 free prompt before verifying.";
+    msg.innerText =
+      `Account created! We've sent a verification email to ${email}. ` +
+      "You can use 1 free prompt now.\n\n" +
+      "To unlock your 3 free daily prompts, open that email, click the verification link, then reload this site.";
   } catch (err) {
     msg.innerText = "Registration failed: " + err.message;
   }
@@ -212,22 +222,49 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
 
   link.addEventListener('click', async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    if (!user) return window.location.href = link.href;
-    if (!user.emailVerified) return alert("Please verify your email before upgrading.");
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        // Not logged in – just send them to the normal Stripe link
+        window.location.href = link.href;
+        return;
+      }
 
-    const idToken = await user.getIdToken();
-    const resp = await fetch(CREATE_SESSION_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
-      body: JSON.stringify({
-        priceId: STRIPE_PRICE_ID,
-        successUrl: window.location.origin + '/?status=success',
-        cancelUrl: window.location.origin + '/?status=cancel'
-      })
-    });
-    const data = await resp.json();
-    if (data.url) window.location.href = data.url;
-    else window.location.href = link.href;
+      if (!user.emailVerified) {
+        const email = user.email;
+        alert(
+          "Please verify your email before upgrading.\n\n" +
+          `We sent a verification link to ${email} when you signed up. ` +
+          "Open that email, click the link, then reload this page and click Subscribe again."
+        );
+        return;
+      }
+
+      const idToken = await user.getIdToken();
+      const resp = await fetch(CREATE_SESSION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          priceId: STRIPE_PRICE_ID,
+          successUrl: window.location.origin + '/?status=success',
+          cancelUrl: window.location.origin + '/?status=cancel'
+        })
+      });
+
+      const data = await resp.json();
+      if (data && data.url) {
+        window.location.href = data.url;
+      } else {
+        // Fallback – use the original Stripe link
+        window.location.href = link.href;
+      }
+    } catch (err) {
+      console.error('Stripe checkout error:', err);
+      // If anything goes wrong, fall back to plain Stripe link
+      window.location.href = link.href;
+    }
   });
 })();
