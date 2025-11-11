@@ -97,8 +97,17 @@ function convertText() {
   const user = auth.currentUser;
   if (!user) return alert("Please login first.");
   if (isPremium) return processText();
-  if (!user.emailVerified) handleUnverifiedUser();
-  else handleVerifiedFreeUser();
+
+  // Allow existing users before update to bypass verification rules
+  const userCreatedDate = user.metadata.creationTime ? new Date(user.metadata.creationTime) : null;
+  const verificationUpdateDate = new Date("2025-11-11");
+  const isOldUser = userCreatedDate && userCreatedDate < verificationUpdateDate;
+
+  if (!user.emailVerified && !isOldUser) {
+    handleUnverifiedUser(); // New rule for unverified users
+  } else {
+    handleVerifiedFreeUser();
+  }
 }
 
 function processText() {
@@ -113,7 +122,7 @@ function handleUnverifiedUser() {
   const lastUse = localStorage.getItem(key);
   const today = new Date().toISOString().slice(0, 10);
   if (lastUse === today) {
-    alert("Please verify your email before continuing to use UntraceAI.");
+    alert("You’ve reached your free prompt limit. Please verify your email to continue using UntraceAI.");
     return;
   }
   localStorage.setItem(key, today);
@@ -181,7 +190,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     await cred.user.sendEmailVerification();
     recordSuccessfulSignup();
-    msg.innerText = "Account created! Check your inbox to verify your email.";
+    msg.innerText = "Account created! You can use 1 free prompt before verifying.";
   } catch (err) {
     msg.innerText = "Registration failed: " + err.message;
   }
