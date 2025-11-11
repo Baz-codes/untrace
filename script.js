@@ -1,4 +1,4 @@
-// Firebase config & setup
+// === Firebase setup ===
 const firebaseConfig = {
   apiKey: "AIzaSyBMldQ1ZlHE2sSfbMNcfj7IlY6ZJ5njvdU",
   authDomain: "untrace-final.firebaseapp.com",
@@ -11,372 +11,214 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+let userUid = null;
 let isPremium = false;
 let promptData = {};
-let userUid = null;
 
-/* =========================
-   Email & signup protection
-   ========================= */
-
-// Simple but strict email pattern: something@something.tld
-function isPlausibleEmail(email) {
-  if (!email) return false;
-
-  email = email.trim();
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,10}$/;
-  if (!emailRegex.test(email)) return false;
-
-  const blockedDomains = [
-    "example.com",
-    "test.com",
-    "fake.com",
-    "mailinator.com",
-    "tempmail.com",
-    "10minutemail.com",
-  ];
-
-  const [local, domain] = email.split("@");
-  if (!local || !domain) return false;
-  if (local.length < 3) return false;
-  if (/^[0-9]+$/.test(local)) return false;
-  if (local.includes("test") || local.includes("fake")) return false;
-
-  const lowerDomain = domain.toLowerCase();
-  if (blockedDomains.some(d => lowerDomain.endsWith(d))) return false;
-
-  return true;
-}
-
-// Per-browser signup limit (very simple)
-const SIGNUP_LIMIT_PER_DAY = 3;
-
-function canRegisterFromThisBrowser() {
+// === Signup limitation per device ===
+const SIGNUP_LIMIT_PER_DAY = 1;
+function canRegisterFromThisDevice() {
   const key = "untrace_signup_stats";
   const today = new Date().toISOString().slice(0, 10);
-
-  let data;
-  try {
-    data = JSON.parse(localStorage.getItem(key)) || {};
-  } catch {
-    data = {};
-  }
-
-  if (data.date !== today) {
-    data = { date: today, count: 0 };
-  }
-
-  if (data.count >= SIGNUP_LIMIT_PER_DAY) {
-    return false;
-  }
+  let data = JSON.parse(localStorage.getItem(key)) || {};
+  if (data.date !== today) data = { date: today, count: 0 };
+  if (data.count >= SIGNUP_LIMIT_PER_DAY) return false;
   return true;
 }
-
 function recordSuccessfulSignup() {
   const key = "untrace_signup_stats";
   const today = new Date().toISOString().slice(0, 10);
-
-  let data;
-  try {
-    data = JSON.parse(localStorage.getItem(key)) || {};
-  } catch {
-    data = {};
-  }
-
-  if (data.date !== today) {
-    data = { date: today, count: 0 };
-  }
-
-  data.count += 1;
+  let data = JSON.parse(localStorage.getItem(key)) || {};
+  if (data.date !== today) data = { date: today, count: 0 };
+  data.count++;
   localStorage.setItem(key, JSON.stringify(data));
 }
 
-/* =========================
-   Auth state handling
-   ========================= */
+// === Email plausibility ===
+function isPlausibleEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+  return emailRegex.test(email);
+}
 
-auth.onAuthStateChanged(function (user) {
+// === Auth state change ===
+auth.onAuthStateChanged(async (user) => {
   if (user) {
     userUid = user.uid;
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('userStatus').style.display = 'block';
     document.getElementById('logoutButton').style.display = 'inline-block';
     document.getElementById('userStatus').innerText = `Welcome, ${user.email}`;
-    checkPremiumOnceAfterLogin();
+    await checkPremiumStatus();
+
+    if (!user.emailVerified) {
+      document.getElementById('verifyBanner').style.display = 'block';
+    } else {
+      document.getElementById('verifyBanner').style.display = 'none';
+    }
   } else {
     userUid = null;
+    isPremium = false;
     document.getElementById('loginSection').style.display = 'block';
     document.getElementById('userStatus').style.display = 'none';
     document.getElementById('logoutButton').style.display = 'none';
-    isPremium = false;
   }
 });
 
-function checkPremiumOnceAfterLogin() {
-  db.collection('users').doc(auth.currentUser.uid).get()
-    .then((doc) => {
-      if (doc.exists && doc.data().premium === true) {
-        isPremium = true;
-        document.getElementById('userStatus').innerText += " ⭐ Premium";
-        document.getElementById('usageInfo').innerText = "Unlimited prompts.";
-        document.getElementById('timerDisplay').innerText = "";
-        localStorage.removeItem('promptUsage');
-      } else {
-        isPremium = false;
-        initializePromptTracking();
-      }
-    })
-    .catch((error) => {
-      console.error('Error checking premium status:', error);
+// === Email verification banner ===
+document.getElementById('sendVerification').addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (user) {
+    await user.sendEmailVerification();
+    alert("Verification email sent! Check your inbox or spam folder.");
+  }
+});
+
+// === Check premium ===
+async function checkPremiumStatus() {
+  try {
+    const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+    if (doc.exists && doc.data().premium === true) {
+      isPremium = true;
+      document.getElementById('userStatus').innerText += " ⭐ Premium";
+      document.getElementById('usageInfo').innerText = "Unlimited prompts.";
+      document.getElementById('timerDisplay').innerText = "";
+      localStorage.removeItem('promptUsage');
+    } else {
       isPremium = false;
       initializePromptTracking();
-    });
+    }
+  } catch {
+    initializePromptTracking();
+  }
 }
 
-/* =========================
-   Conversion & free-tier logic
-   ========================= */
-
+// === Prompt limits ===
 function convertText() {
-  if (!auth.currentUser) {
-    alert("Please login first.");
-    return;
-  }
-
-  if (isPremium) {
-    proceedWithConversion();
-  } else {
-    proceedWithFreeUserFlow();
-  }
+  const user = auth.currentUser;
+  if (!user) return alert("Please login first.");
+  if (isPremium) return processText();
+  if (!user.emailVerified) handleUnverifiedUser();
+  else handleVerifiedFreeUser();
 }
 
-function proceedWithConversion() {
-  const text = document.getElementById('inputText').value;
-  const replacements = { 'a': 'а', 'c': 'с', 'd': 'ԁ', 'p': 'р', 'e': 'e' };
-  const output = text.replace(/[acdep]/g, (letter) => replacements[letter] || letter);
+function processText() {
+  const input = document.getElementById('inputText').value;
+  const replacements = { 'a': 'а', 'c': 'с', 'e': 'e', 'p': 'р', 'd': 'ԁ' };
+  const output = input.replace(/[acdep]/g, (ch) => replacements[ch] || ch);
   document.getElementById('outputText').value = output;
 }
 
-function proceedWithFreeUserFlow() {
+function handleUnverifiedUser() {
+  const key = "unverified_prompt_usage";
+  const lastUse = localStorage.getItem(key);
+  const today = new Date().toISOString().slice(0, 10);
+  if (lastUse === today) {
+    alert("Please verify your email before continuing to use UntraceAI.");
+    return;
+  }
+  localStorage.setItem(key, today);
+  processText();
+}
+
+function handleVerifiedFreeUser() {
   const text = document.getElementById('inputText').value;
   const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
-  if (wordCount > 75) {
-    alert("Free users can only use up to 75 words per prompt.");
-    return;
+  if (wordCount > 75) return alert("Free users can only use up to 75 words per prompt.");
+
+  const now = Date.now();
+  const data = promptData[userUid] || { remaining: 3, resetTime: now + 86400000 };
+  if (now >= data.resetTime) {
+    data.remaining = 3;
+    data.resetTime = now + 86400000;
   }
-
-  let userData = promptData[userUid] || { remaining: 3, resetTime: null };
-  const currentTime = new Date().getTime();
-
-  if (!userData.resetTime) {
-    userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
-    startCountdown(userData.resetTime);
-  } else if (currentTime >= userData.resetTime) {
-    userData.remaining = 3;
-    userData.resetTime = currentTime + 24 * 60 * 60 * 1000;
-    startCountdown(userData.resetTime);
-  }
-
-  if (userData.remaining <= 0) {
-    alert("You've used all your 3 free prompts. Please wait for reset or upgrade to premium.");
-    return;
-  }
-
-  userData.remaining--;
-  promptData[userUid] = userData;
+  if (data.remaining <= 0) return alert("You've used all free prompts. Verify or upgrade to premium.");
+  data.remaining--;
+  promptData[userUid] = data;
   localStorage.setItem('promptUsage', JSON.stringify(promptData));
   updatePromptUI();
-  proceedWithConversion();
+  processText();
 }
 
 function initializePromptTracking() {
   promptData = JSON.parse(localStorage.getItem('promptUsage')) || {};
-  if (!promptData[userUid]) {
-    promptData[userUid] = { remaining: 3, resetTime: null };
-  }
+  if (!promptData[userUid]) promptData[userUid] = { remaining: 3, resetTime: null };
   updatePromptUI();
 }
 
 function updatePromptUI() {
-  if (isPremium) {
-    document.getElementById('usageInfo').innerText = "Unlimited prompts.";
-    document.getElementById('timerDisplay').innerText = "";
-    return;
-  }
   const userData = promptData[userUid];
   document.getElementById('usageInfo').innerText =
-    `Prompts remaining: ${userData.remaining}/3`;
-  if (userData.resetTime) {
-    startCountdown(userData.resetTime);
-  }
+    isPremium ? "Unlimited prompts." : `Prompts remaining: ${userData.remaining}/3`;
 }
 
-function startCountdown(endTime) {
-  const timerDisplay = document.getElementById('timerDisplay');
-
-  function updateTimer() {
-    const now = new Date().getTime();
-    const timeLeft = endTime - now;
-    if (timeLeft <= 0) {
-      timerDisplay.innerText = "Prompt limit reset!";
-      promptData[userUid] = { remaining: 3, resetTime: null };
-      localStorage.setItem('promptUsage', JSON.stringify(promptData));
-      updatePromptUI();
-      return;
-    }
-    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    timerDisplay.innerText = `Next reset in: ${hours}h ${minutes}m`;
-  }
-
-  updateTimer();
-  setInterval(updateTimer, 60000);
-}
-
-/* =========================
-   Logout
-   ========================= */
-
-document.getElementById('logoutButton').addEventListener('click', function () {
-  auth.signOut().then(() => {
-    alert("You have been logged out.");
-    location.reload();
-  }).catch((error) => {
-    console.error('Logout failed:', error);
-  });
-});
-
-/* =========================
-   Login
-   ========================= */
-
-document.getElementById('loginForm').addEventListener('submit', function (e) {
+// === Login ===
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value.toLowerCase();
   const password = document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      document.getElementById('loginMessage').innerText = "Login successful!";
-    })
-    .catch((error) => {
-      document.getElementById('loginMessage').innerText = "Login failed: " + error.message;
-    });
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    document.getElementById('loginMessage').innerText = "Login successful!";
+  } catch (err) {
+    document.getElementById('loginMessage').innerText = "Login failed: " + err.message;
+  }
 });
 
-/* =========================
-   Register (no Kickbox; local checks only)
-   ========================= */
-
-document.getElementById('registerForm').addEventListener('submit', async function (e) {
+// === Register ===
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const emailInput = document.getElementById('registerEmail');
-  const passwordInput = document.getElementById('registerPassword');
-  const msgEl = document.getElementById('registerMessage');
+  const email = document.getElementById('registerEmail').value.toLowerCase();
+  const password = document.getElementById('registerPassword').value;
+  const msg = document.getElementById('registerMessage');
 
-  const email = emailInput.value.toLowerCase().trim();
-  const password = passwordInput.value;
+  if (auth.currentUser) return msg.innerText = "Please log out before creating another account.";
+  if (!canRegisterFromThisDevice()) return msg.innerText = "Too many accounts created from this device today.";
+  if (!isPlausibleEmail(email)) return msg.innerText = "Invalid email.";
+  if (password.length < 6) return msg.innerText = "Password must be at least 6 characters.";
 
-  msgEl.style.color = '';
-  msgEl.innerText = "";
-
-  // Per-browser signup limit
-  if (!canRegisterFromThisBrowser()) {
-    msgEl.style.color = 'red';
-    msgEl.innerText =
-      "Too many new accounts from this browser today. Please try again tomorrow or log in to your existing account.";
-    return;
+  msg.innerText = "Creating account...";
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, password);
+    await cred.user.sendEmailVerification();
+    recordSuccessfulSignup();
+    msg.innerText = "Account created! Check your inbox to verify your email.";
+  } catch (err) {
+    msg.innerText = "Registration failed: " + err.message;
   }
-
-  // Email sanity
-  if (!isPlausibleEmail(email)) {
-    msgEl.style.color = 'red';
-    msgEl.innerText =
-      "Please enter a real email address (e.g. your uni or personal email).";
-    return;
-  }
-
-  // Simple password sanity
-  if (password.length < 6) {
-    msgEl.style.color = 'red';
-    msgEl.innerText = "Password must be at least 6 characters.";
-    return;
-  }
-
-  msgEl.innerText = "Creating your account...";
-
-  auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      recordSuccessfulSignup();
-      msgEl.style.color = '';
-      msgEl.innerText = "Registration successful! You can now log in.";
-    })
-    .catch((error) => {
-      msgEl.style.color = 'red';
-      msgEl.innerText = "Registration failed: " + error.message;
-    });
 });
 
-/* =========================
-   Stripe checkout interception
-   ========================= */
+// === Logout ===
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  await auth.signOut();
+  alert("Logged out.");
+  location.reload();
+});
 
-// Route your "Subscribe Now" link through your Cloud Function.
-// Forces Stripe to use the Firebase email and includes metadata.uid.
-// Falls back to the original link if anything fails (so nothing breaks).
+// === Stripe checkout ===
 (() => {
   const link = document.querySelector('.premium-section a[href*="buy.stripe.com"]');
   if (!link) return;
-
-  // Your LIVE Stripe Price ID
   const STRIPE_PRICE_ID = 'price_1QrFfLJB5iSnPCgrxmoIifO0';
-
-  // Your deployed function URL from the deploy output
-  const CREATE_SESSION_URL =
-    'https://us-central1-untrace-final.cloudfunctions.net/createCheckoutSession';
+  const CREATE_SESSION_URL = 'https://us-central1-untrace-final.cloudfunctions.net/createCheckoutSession';
 
   link.addEventListener('click', async (e) => {
-    try {
-      const user = auth.currentUser;
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return window.location.href = link.href;
+    if (!user.emailVerified) return alert("Please verify your email before upgrading.");
 
-      // If user not logged in, keep default behavior
-      if (!user) return;
-
-      // Intercept click and use backend-created session
-      e.preventDefault();
-
-      const idToken = await user.getIdToken();
-
-      const resp = await fetch(CREATE_SESSION_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          priceId: STRIPE_PRICE_ID,
-          successUrl: window.location.origin + '/?status=success',
-          cancelUrl: window.location.origin + '/?status=cancel'
-        })
-      });
-
-      if (!resp.ok) {
-        console.error('createCheckoutSession failed, falling back to static link:', await resp.text());
-        window.location.href = link.href;
-        return;
-      }
-
-      const data = await resp.json();
-      if (!data || !data.url) {
-        console.error('No session URL returned, falling back to static link.');
-        window.location.href = link.href;
-        return;
-      }
-
-      window.location.href = data.url;
-    } catch (err) {
-      console.error('Checkout error, falling back to static link:', err);
-      window.location.href = link.href;
-    }
+    const idToken = await user.getIdToken();
+    const resp = await fetch(CREATE_SESSION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+      body: JSON.stringify({
+        priceId: STRIPE_PRICE_ID,
+        successUrl: window.location.origin + '/?status=success',
+        cancelUrl: window.location.origin + '/?status=cancel'
+      })
+    });
+    const data = await resp.json();
+    if (data.url) window.location.href = data.url;
+    else window.location.href = link.href;
   });
 })();

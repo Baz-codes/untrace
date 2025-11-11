@@ -39,6 +39,14 @@
     </div>
   </header>
 
+  <!-- 🔔 Email verification banner (hidden until script.js shows it) -->
+  <div id="verifyBanner" style="display:none; background: rgba(0, 123, 255, 0.1); border: 1px solid #007bff; color: #fff; padding: 10px 16px; margin: 10px auto; max-width: 800px; border-radius: 6px; text-align: center;">
+    <span>Please verify your email to keep using UntraceAI and access more prompts.</span>
+    <button id="sendVerification" style="margin-left: 10px; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer;">
+      Resend verification email
+    </button>
+  </div>
+
   <main>
     <!-- Converter -->
     <div class="converter-box">
